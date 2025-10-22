@@ -1,0 +1,29 @@
+/* [project]/src/app/wishlist/[id]/wishlist.module.css [app-client] (css) */
+.wishlist-module__j4FCEa__pageWrap {
+  z-index: 1;
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  background: #000 url("/images/happyface.gif") 0 0 / cover fixed;
+  min-width: 100%;
+  min-height: 100vh;
+  position: absolute;
+  overflow: hidden;
+}
+
+.wishlist-module__j4FCEa__pageWrap:before {
+  content: "";
+  z-index: -1;
+  background-color: rgba(0, 0, 0, .85);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.wishlist-module__j4FCEa__gameContainer {
+  justify-content: center;
+  align-items: center;
+}
+
+/*# sourceMappingURL=src_app_wishlist_%5Bid%5D_wishlist_module_css_bad6b30c._.single.css.map*/

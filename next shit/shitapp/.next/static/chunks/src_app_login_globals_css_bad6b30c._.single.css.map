@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/app/login/globals.css"],"sourcesContent":["\r\n@font-face{\r\n    font-family: \"Minecraft\";\r\n    src: url(\"../../../public/fonts/Minecraft.ttf\") format(\".ttf\");\r\n}\r\n\r\nhtml, body, * {\r\n    background-image: url(\"/images/minecraft_dirt_bg.webp\");\r\n    font-family: \"Minecraft\", sans-serif;\r\n}\r\n\r\n"],"names":[],"mappings":"AACA;;;;;AAKA"}}]
+}

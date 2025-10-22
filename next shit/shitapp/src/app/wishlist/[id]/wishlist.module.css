@@ -1,0 +1,29 @@
+
+
+.pageWrap{
+  position: absolute;
+  z-index: 1;
+  min-height:100vh;
+  min-width: 100%;
+  backdrop-filter: blur(1px);
+  background: #000;
+  background-image: url("/images/happyface.gif");
+  background-size: cover;
+  background-attachment: fixed;
+  overflow: hidden;
+}
+
+
+.pageWrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.85); /* 🔹 Negro al 50% */
+  z-index: -1; /* se queda detrás del contenido */
+}
+
+.gameContainer {
+  /* display: flex; */
+  align-items: center;
+  justify-content: center;
+}

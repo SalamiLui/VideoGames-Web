@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/app/demons/demos.module.css"],"sourcesContent":[".demonList {\r\n    font-weight: 600;\r\n    text-align: center;\r\n    justify-content: left;\r\n}"],"names":[],"mappings":"AAAA"}}]
+}

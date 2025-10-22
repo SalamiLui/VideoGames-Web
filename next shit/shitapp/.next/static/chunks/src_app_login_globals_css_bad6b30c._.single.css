@@ -1,0 +1,12 @@
+/* [project]/src/app/login/globals.css [app-client] (css) */
+@font-face {
+  font-family: Minecraft;
+  src: url("../media/Minecraft.6a8d695b.ttf") format(".ttf");
+}
+
+html, body, * {
+  background-image: url("/images/minecraft_dirt_bg.webp");
+  font-family: Minecraft, sans-serif;
+}
+
+/*# sourceMappingURL=src_app_login_globals_css_bad6b30c._.single.css.map*/

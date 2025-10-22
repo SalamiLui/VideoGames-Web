@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 15, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/juanl/Documents/Escola/web/next%20shit/shitapp/src/app/games/%5Bid%5D/page.tsx"],"sourcesContent":["import { useParams } from \"next/navigation\";\r\n\r\nexport default function Game(){\r\n    const params = useParams();\r\n    const id = params.id;\r\n\r\n    return <>\r\n    <div>\r\n        <p>{id}</p>\r\n\r\n    </div>\r\n\r\n    </>\r\n}"],"names":[],"mappings":";;;;;AAAA;AAAA;;;AAEe,SAAS;IACpB,MAAM,SAAS,IAAA,kMAAS;IACxB,MAAM,KAAK,OAAO,EAAE;IAEpB,qBAAO;kBACP,cAAA,8OAAC;sBACG,cAAA,8OAAC;0BAAG;;;;;;;;;;;;AAKZ","debugId":null}}]
+}

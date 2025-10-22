@@ -1,0 +1,21 @@
+/* [project]/src/app/login/myfont_9161533a.module.css [app-client] (css) */
+@font-face {
+  font-family: myFont;
+  src: url("../media/Minecraft-s.p.6a8d695b.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: myFont Fallback;
+  src: local(Arial);
+  ascent-override: 126.59%;
+  descent-override: 27.13%;
+  line-gap-override: 0.0%;
+  size-adjust: 138.24%;
+}
+
+.myfont_9161533a-module__5PeETG__className {
+  font-family: myFont, myFont Fallback;
+}
+
+/*# sourceMappingURL=src_app_login_myfont_9161533a_module_css_bad6b30c._.single.css.map*/

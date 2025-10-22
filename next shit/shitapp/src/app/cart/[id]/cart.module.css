@@ -1,0 +1,21 @@
+.pageWrap{
+  position: absolute;
+  z-index: 1;
+  min-height:100vh;
+  min-width: 100%;
+  backdrop-filter: blur(1px);
+  background: #0000002b;
+  background-image: url("/images/t1.jpg");
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.pageWrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.24); /* 🔹 Negro al 50% */
+  z-index: -1; /* se queda detrás del contenido */
+}

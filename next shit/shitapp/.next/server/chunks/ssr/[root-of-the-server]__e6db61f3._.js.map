@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 15, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/juanl/Documents/Escola/web/next%20shit/shitapp/src/app/cart/%5Bid%5D/page.tsx"],"sourcesContent":["import { useParams } from \"next/navigation\"\r\n\r\nexport default function Cart(){\r\n    const params = useParams();\r\n    const userID =  params.id;\r\n\r\n    return <>\r\n    <h1>hello nigga</h1>\r\n    <h2>ur id is {userID}</h2>\r\n    </>\r\n}"],"names":[],"mappings":";;;;;AAAA;AAAA;;;AAEe,SAAS;IACpB,MAAM,SAAS,IAAA,kMAAS;IACxB,MAAM,SAAU,OAAO,EAAE;IAEzB,qBAAO;;0BACP,8OAAC;0BAAG;;;;;;0BACJ,8OAAC;;oBAAG;oBAAU;;;;;;;;;AAElB","debugId":null}}]
+}

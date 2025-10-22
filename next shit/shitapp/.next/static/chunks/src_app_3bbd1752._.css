@@ -1,0 +1,256 @@
+/* [project]/src/app/login/Login.module.css [app-client] (css) */
+@font-face {
+  font-family: minecraft;
+  src: url("/fonts/Minecraftia.ttf") format("truetype");
+}
+
+.Login-module__noQWca__main {
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+  padding: 0%;
+  font-family: minecraft, sans-serif;
+  display: flex;
+  position: relative;
+  cursor: url("/images/minecraft.cur"), auto !important;
+}
+
+.Login-module__noQWca__container {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 40rem;
+  display: flex;
+  position: relative;
+}
+
+.Login-module__noQWca__form {
+  border-radius: 12px;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 400px;
+  padding: 2rem 3rem;
+  display: flex;
+}
+
+.Login-module__noQWca__title {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.Login-module__noQWca__input {
+  color: #fff;
+  background: #000;
+  border: 2px solid #fff;
+  height: 40px;
+  padding: .5rem;
+}
+
+.Login-module__noQWca__input:focus {
+  outline: none;
+  box-shadow: 0 0 3px rgba(0, 112, 243, .3);
+}
+
+.Login-module__noQWca__buttons {
+  justify-content: space-between;
+  gap: 2rem;
+  padding-top: 2rem;
+  display: flex;
+}
+
+.Login-module__noQWca__loginButton, .Login-module__noQWca__createButton {
+  cursor: pointer;
+  border: 1px solid #1c1c1c;
+  width: 300px;
+  height: 40px;
+  padding: .3rem;
+  font-weight: 500;
+}
+
+.Login-module__noQWca__loginButton {
+  color: #fff;
+  background-image: url("/images/minecraft_stone_bg.jpg");
+}
+
+.Login-module__noQWca__loginButton:hover {
+  background-color: #005ad1;
+}
+
+.Login-module__noQWca__createButton {
+  color: #fff;
+  background-image: url("/images/minecraft_stone_bg.jpg");
+}
+
+.Login-module__noQWca__createButton:hover {
+  background-color: #ccc;
+}
+
+.Login-module__noQWca__recoverLink {
+  text-align: center;
+  color: #0070f3;
+  margin-top: .5rem;
+  font-size: .9rem;
+  text-decoration: none;
+  display: block;
+}
+
+.Login-module__noQWca__recoverLink:hover {
+  text-decoration: underline;
+}
+
+.Login-module__noQWca__pageWrap {
+  background-image: url("/images/minecraft_dirt_bg.webp");
+  min-width: 100vh;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* [project]/src/app/components/Header.module.css [app-client] (css) */
+.Header-module__GPz-la__header {
+  z-index: 10;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  background: #000;
+  border-bottom: 1px solid rgba(182, 0, 0, .12);
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+}
+
+.Header-module__GPz-la__headerInner {
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 18px 36px;
+  display: flex;
+}
+
+.Header-module__GPz-la__titleWrap {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.Header-module__GPz-la__siteTitle {
+  font-family: var(--titleFont);
+  letter-spacing: 2px;
+  color: #fff;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(182, 0, 0, .08), 0 0 2px rgba(255, 0, 0, .05);
+  margin: 0;
+  font-size: 28px;
+  font-weight: bold;
+  animation: 1s infinite Header-module__GPz-la__vibrate;
+}
+
+@keyframes Header-module__GPz-la__vibrate {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  10% {
+    opacity: .98;
+    transform: translateX(-1px);
+  }
+
+  20% {
+    opacity: .95;
+    transform: translateX(1px);
+  }
+
+  30% {
+    opacity: .97;
+    transform: translateX(-1px);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.Header-module__GPz-la__gift {
+  cursor: pointer;
+  font-size: 24px;
+  transition: transform .2s;
+}
+
+.Header-module__GPz-la__gift:hover {
+  text-shadow: 0 0 10px #fd0;
+  transform: scale(1.2);
+}
+
+.Header-module__GPz-la__submenu {
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  display: flex;
+}
+
+.Header-module__GPz-la__menuItem {
+  color: #ddd;
+  background: rgba(0, 0, 0, .15);
+  border-radius: 6px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  font-weight: 600;
+  display: flex;
+}
+
+.Header-module__GPz-la__menuItem:hover {
+  color: var(--accent);
+  text-shadow: 0 0 6px rgba(182, 0, 0, .2);
+  transform: translateY(-2px);
+}
+
+.Header-module__GPz-la__userMenu {
+  cursor: pointer;
+  display: inline;
+  position: relative;
+}
+
+.Header-module__GPz-la__dropdown {
+  z-index: 1000;
+  background-color: #000;
+  border: 1px solid #232323;
+  min-width: 150px;
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, .1);
+}
+
+.Header-module__GPz-la__dropdownItem {
+  color: #fff;
+  padding: 10px 15px;
+  font-weight: 500;
+  text-decoration: none;
+  display: block;
+}
+
+.Header-module__GPz-la__dropdownItem:hover {
+  background-color: #000;
+}
+
+.Header-module__GPz-la__userMenu:hover .Header-module__GPz-la__dropdown {
+  display: block;
+}
+
+.Header-module__GPz-la__dropdownItem button {
+  color: #00f;
+}
+
+/*# sourceMappingURL=src_app_3bbd1752._.css.map*/

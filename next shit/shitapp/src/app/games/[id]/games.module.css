@@ -1,0 +1,125 @@
+.mainCard {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+  display: flex;
+  gap: 3rem;
+  justify-content: center;
+  padding: 2rem 2rem;
+}
+
+
+.pageWrap{
+  position:absolute;
+  z-index: 1;
+  min-height: 100vh;
+  min-width:100%;
+  backdrop-filter: blur(1px);
+  background-image: url("/images/terror2.gif");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+
+.pageWrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.9); /* 🔹 Negro al 50% */
+  z-index: -1; /* se queda detrás del contenido */
+}
+
+
+/* GamePage.css */
+.gamePage {
+  background-color: #7809e7;
+  color: #f5f5f5;
+  font-family: 'VT323', monospace;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.gameContainer {
+  margin: 0 auto 80px;
+  padding: 1rem 15rem;
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+
+.gameImage img {
+  width: 300px;
+  /* border: 2px solid #550000; */
+  border-radius: 8px;
+}
+
+.gameInfo {
+  flex: 1;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.cardInfo {
+  column-count: 2;
+  column-gap: 2px;
+  padding: 0 1rem;
+}
+
+.gameTitle {
+  font-weight: bolder;
+  font-size: 50;
+  margin-bottom: 1rem;
+}
+
+.cards {
+  display:grid;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.card {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 2rem;
+  /* border: 1px solid #550000; */
+  border-radius: 6px;
+  flex: 1 1 200px;
+}
+
+.subMainInfo p {
+  text-align: left;
+  padding-left: 2rem;
+  font-weight: 600;
+  text-justify:inter-word;
+  /* color: white; */
+
+}
+
+
+
+.gameButtons {
+  margin-top: 1.5rem;
+  display: flex;
+  padding: 0 2rem;
+  gap: 1rem;
+}
+
+.btn {
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  font-weight: bolder;
+  background: linear-gradient(180deg, rgba(180,0,0,0.95), rgba(150,0,0,0.85));
+  color:#fff;
+  /* transition: all 0.3s ease; */
+  box-shadow: 0 6px 18px rgba(182,0,0,0.16);
+}
+
+.btn.red-glow:hover {
+  color: #ff0000;
+  box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0.5; }
+}

@@ -1,0 +1,102 @@
+/* [project]/src/app/login/Login.module.css [app-client] (css) */
+@font-face {
+  font-family: minecraft;
+  src: url("/fonts/Minecraftia.ttf") format("truetype");
+}
+
+.Login-module__noQWca__main {
+  background-image: url("/images/minecraft_dirt_bg.webp");
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+  padding: 0%;
+  font-family: minecraft, sans-serif;
+  display: flex;
+}
+
+.Login-module__noQWca__container {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+}
+
+.Login-module__noQWca__form {
+  border-radius: 12px;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 400px;
+  padding: 2rem 3rem;
+  display: flex;
+}
+
+.Login-module__noQWca__title {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.Login-module__noQWca__input {
+  color: #fff;
+  background: #000;
+  border: 2px solid #fff;
+  height: 40px;
+  padding: .5rem;
+}
+
+.Login-module__noQWca__input:focus {
+  outline: none;
+  box-shadow: 0 0 3px rgba(0, 112, 243, .3);
+}
+
+.Login-module__noQWca__buttons {
+  justify-content: space-between;
+  gap: 2rem;
+  padding-top: 2rem;
+  display: flex;
+}
+
+.Login-module__noQWca__loginButton, .Login-module__noQWca__createButton {
+  cursor: pointer;
+  border: 1px solid #1c1c1c;
+  width: 300px;
+  height: 40px;
+  padding: .3rem;
+  font-weight: 500;
+}
+
+.Login-module__noQWca__loginButton {
+  color: #fff;
+  background-image: url("/images/minecraft_stone_bg.jpg");
+}
+
+.Login-module__noQWca__loginButton:hover {
+  background-color: #005ad1;
+}
+
+.Login-module__noQWca__createButton {
+  color: #fff;
+  background-image: url("/images/minecraft_stone_bg.jpg");
+}
+
+.Login-module__noQWca__createButton:hover {
+  background-color: #ccc;
+}
+
+.Login-module__noQWca__recoverLink {
+  text-align: center;
+  color: #0070f3;
+  margin-top: .5rem;
+  font-size: .9rem;
+  text-decoration: none;
+  display: block;
+}
+
+.Login-module__noQWca__recoverLink:hover {
+  text-decoration: underline;
+}
+
+/*# sourceMappingURL=src_app_login_Login_module_23d7f0e1.css.map*/

@@ -1,0 +1,130 @@
+
+.header{
+  position: sticky;
+  top:0;
+  z-index: 10;
+  background: #000;
+  border-bottom: 1px solid rgba(182,0,0,0.12);
+  backdrop-filter: blur(4px);
+}
+
+.headerInner{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 36px;
+  max-width:1300px;
+  margin:0 auto;
+}
+
+.titleWrap{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.siteTitle{
+  font-family: var(--titleFont);
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #ffffff;
+  margin:0;
+  text-transform: uppercase;
+  animation: vibrate 1s infinite;
+  text-shadow: 0 0 12px rgba(182,0,0,0.08), 0 0 2px rgba(255,0,0,0.05);
+}
+
+/* vibration / flicker effect */
+@keyframes vibrate {
+  0% { transform: translateX(0); opacity: 1; }
+  10% { transform: translateX(-1px); opacity: 0.98; }
+  20% { transform: translateX(1px); opacity: 0.95; }
+  30% { transform: translateX(-1px); opacity: 0.97; }
+  40% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.gift {
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.gift:hover {
+  transform: scale(1.2);
+  text-shadow: 0 0 10px #ffdd00;
+}
+
+/* submenu on the right */
+.submenu{
+  display:flex;
+  gap:16px;
+  align-items: center;
+  justify-content:flex-end;
+}
+
+.menuItem{
+  display:flex;
+  gap:8px;
+  align-items: center;
+  padding:8px 10px;
+  border-radius:6px;
+  color: #ddd;
+  font-weight:600;
+  background: rgba(0,0,0,0.15);
+}
+
+.menuItem:hover{
+  color: var(--accent);
+  transform: translateY(-2px);
+  text-shadow: 0 0 6px rgba(182,0,0,0.2);
+}
+
+.userMenu {
+  position: relative;
+  cursor: pointer;
+  display: inline;
+}
+
+
+.dropdown {
+  display: none; /* Oculto por defecto */
+  position: absolute; /* Se posiciona respecto a .userMenu */
+  top: 100%; /* Justo debajo del elemento padre */
+  left: 0; /* Alineado al inicio del nombre */
+  background-color: #000;
+  border: 1px solid #232323;
+  min-width: 150px; /* Ancho mínimo */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra para resaltar */
+  z-index: 1000; /* Para que aparezca sobre otros elementos */
+}
+
+.dropdownItem {
+  display: block;
+  padding: 10px 15px;
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.dropdownItem:hover {
+  background-color: black;
+}
+
+.userMenu:hover .dropdown {
+  display: block; /* Se muestra al pasar el mouse */
+}
+
+.dropdownItem button {
+  color: blue;
+}
+
+
+
+
+
+
+
+

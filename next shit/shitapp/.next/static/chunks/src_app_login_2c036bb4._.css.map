@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/juanl/Documents/Escola/web/next%20shit/shitapp/src/app/login/globals.css"],"sourcesContent":["\r\n@font-face{\r\n    font-family: \"Minecraft\";\r\n    src: url(\"../../../public/fonts/Minecraft.ttf\") format(\".ttf\");\r\n}\r\n\r\nhtml, body, * {\r\n    background-image: url(\"/images/minecraft_dirt_bg.webp\");\r\n    font-family: \"Minecraft\", sans-serif;\r\n}\r\n\r\n"],"names":[],"mappings":"AACA;;;;;AAKA","debugId":null}},
+    {"offset": {"line": 12, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/juanl/Documents/Escola/web/next%20shit/shitapp/src/app/login/myfont_9161533a.module.css"],"sourcesContent":["@font-face {\n    font-family: 'myFont';\n    src: url('@vercel/turbopack-next/internal/font/local/font?{%22path%22:%22../../../public/fonts/Minecraft.ttf%22,%22preload%22:true,%22has_size_adjust%22:true}') format('truetype');\n    font-display: swap;\n    \n}\n\n@font-face {\n    font-family: 'myFont Fallback';\n    src: local(\"Arial\");\n    ascent-override: 126.59%;\ndescent-override: 27.13%;\nline-gap-override: 0.00%;\nsize-adjust: 138.24%;\n\n}\n\n.className {\n    font-family: 'myFont', 'myFont Fallback';\n    \n}\n\n"],"names":[],"mappings":"AAAA;;;;;;AAOA;;;;;;;;;AAUA","debugId":null}}]
+}

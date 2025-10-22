@@ -1,0 +1,23 @@
+/* [project]/src/app/cart/[id]/cart.module.css [app-client] (css) */
+.cart-module__FjdjHq__pageWrap {
+  z-index: 1;
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  background: rgba(0, 0, 0, .17) url("/images/t1.jpg") center / contain no-repeat fixed;
+  min-width: 100%;
+  min-height: 100vh;
+  position: absolute;
+}
+
+.cart-module__FjdjHq__pageWrap:before {
+  content: "";
+  z-index: -1;
+  background-color: rgba(0, 0, 0, .24);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+/*# sourceMappingURL=src_app_cart_%5Bid%5D_cart_module_css_bad6b30c._.single.css.map*/

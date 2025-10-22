@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 15, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/juanl/Documents/Escola/web/next%20shit/shitapp/src/app/register/page.tsx"],"sourcesContent":["\r\n\r\nexport default function Register() {\r\n    return <>\r\n    <h1> hello nigga</h1>\r\n\r\n    </>\r\n}"],"names":[],"mappings":";;;;;;AAEe,SAAS;IACpB,qBAAO;kBACP,cAAA,8OAAC;sBAAG;;;;;;;AAGR","debugId":null}}]
+}
