@@ -1,0 +1,23 @@
+{
+    "title" : "skyrimSE",
+    "genre" : [
+        {"id" : 1},
+        {"id": 2}
+    ],
+    "platform" : [
+        {"id":1},
+        {"id":2}
+    ],
+    "label" : [
+        {"id": 1}
+    ],
+    "price" : 500,
+    "synopsis" : "Just another shitty game or somehting like that",
+    "phy_stock" : 12,
+    "pegi" : 18,
+    "min_req" : "Intel i5, 8GB RAM, GTX 1060",
+    "rating" : 5,
+    "image_url" : "/gameImages/skyrim.png",
+    "release_year" : 2018,
+    "developer" : "Bethesda"
+}
