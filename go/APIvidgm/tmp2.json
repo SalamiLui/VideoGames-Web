@@ -1,3 +1,5 @@
 {
-    "name" : "Pre-sale"
+    "videogame_id" : 7,
+    "is_physical" : true,
+    "quantity" : 1
 }

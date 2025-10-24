@@ -3,6 +3,7 @@ package controllers
 import (
 	"APIvdgm/database"
 	"APIvdgm/models"
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -13,38 +14,34 @@ func GetCartByUserID(c *gin.Context) {
 	var user models.User
 	var cart models.Cart
 	db := database.DB
-	if result := db.Preload("Cart.VideoGames").Find(&user, userID); result.Error != nil {
+	if result := db.Preload("Cart.VideoGames.VideoGame").Find(&user, userID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
 		return
 	}
-	cart = *user.Cart
-	if cart == (models.Cart{}) {
-		c.IndentedJSON(404, gin.H{"message": "cart not found"})
-		return
+	if user.Cart == nil {
+		if code, obj := CreateCart(userID); code != 200 {
+			c.IndentedJSON(code, obj)
+			return
+		}
+		CreateCart(userID)
 	}
+	cart = *user.Cart
 	c.IndentedJSON(200, cart)
 }
 
-func CreateCart(c *gin.Context) {
+func CreateCart(userID string) (int, any) {
 	var cart models.Cart
-	userID := c.Param("id")
 	var user models.User
-	if err := c.ShouldBindJSON(&cart); err != nil {
-		c.IndentedJSON(400, gin.H{"error": err.Error()})
-		return
-	}
 	db := database.DB
 	if result := db.First(&user, userID); result.Error != nil {
-		c.IndentedJSON(404, gin.H{"message": "user not found"})
-		return
+		return 404, gin.H{"message": "user not found"}
 	}
 	cart.UserID = user.ID
 	cart.TotalPrice = 0
 	if result := db.Create(&cart); result.Error != nil {
-		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
-		return
+		return 500, gin.H{"error": result.Error.Error()}
 	}
-	c.IndentedJSON(201, cart)
+	return 200, gin.H{"message": "created"}
 }
 
 func AddItemToCart(c *gin.Context) {
@@ -60,15 +57,17 @@ func AddItemToCart(c *gin.Context) {
 	}
 
 	db := database.DB
-	if result := db.Find(&user, userID); result.Error != nil {
+	if result := db.Preload("Cart").Find(&user, userID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
 		return
 	}
-	cart = *user.Cart
-	if cart == (models.Cart{}) {
-		c.IndentedJSON(404, gin.H{"message": "cart not found"})
-		return
+	if user.Cart == (nil) {
+		if code, obj := CreateCart(userID); code != 200 {
+			c.IndentedJSON(code, obj)
+			return
+		}
 	}
+	cart = *user.Cart
 
 	if result := db.First(&videogame, cartItem.VideoGameID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "videogame not found"})
@@ -79,7 +78,7 @@ func AddItemToCart(c *gin.Context) {
 		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
 		return
 	}
-	cart.TotalPrice += (cartItem.VideoGame.Price * float64(cartItem.Quantity))
+	cart.TotalPrice += (videogame.Price * float64(cartItem.Quantity))
 	if result := db.Save(&cart); result.Error != nil {
 		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
 		return
@@ -99,12 +98,13 @@ func UpdateItemCart(c *gin.Context) {
 		c.IndentedJSON(400, gin.H{"error": err.Error()})
 		return
 	}
+	fmt.Println(newCartItem)
 	db := database.DB
-	if result := db.First(&oldCartItem, itemID); result.Error != nil {
+	if result := db.Preload("VideoGame").First(&oldCartItem, itemID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "cart item not found"})
 		return
 	}
-	if result := db.First(&user, userID); result.Error != nil {
+	if result := db.Preload("Cart").First(&user, userID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
 		return
 	}
@@ -117,12 +117,14 @@ func UpdateItemCart(c *gin.Context) {
 		return
 	}
 	newCartItem.ID = oldCartItem.ID
+	newCartItem.VideoGameID = oldCartItem.VideoGameID
+	newCartItem.CartID = oldCartItem.CartID
 	if result := db.Save(&newCartItem); result.Error != nil {
 		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
 		return
 	}
 	user.Cart.TotalPrice -= (oldCartItem.VideoGame.Price * float64(oldCartItem.Quantity))
-	user.Cart.TotalPrice += (newCartItem.VideoGame.Price * float64(newCartItem.Quantity))
+	user.Cart.TotalPrice += (oldCartItem.VideoGame.Price * float64(newCartItem.Quantity))
 	if result := db.Save(&user.Cart); result.Error != nil {
 		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
 		return

@@ -39,6 +39,8 @@ func main() {
 
 	router.Use(cors.New(config))
 
+	// TODO implement Middleware for authentication with the jwt
+
 	// TODO create endopoints with preload for relational models
 
 	router.GET("/videogames", controllers.GetVideogames)
@@ -66,11 +68,10 @@ func main() {
 	router.DELETE("/platforms/:id", controllers.DeleteCatalog[models.Platform])
 
 	router.GET("/users/:id", controllers.GetUserByID)
+
+	// cart is create automatically if not found when getting / adding to cart
 	router.GET("/users/:id/cart", controllers.GetCartByUserID)
-	// TODO create automatically in getcart
-	router.POST("/users/:id/cart", controllers.CreateCart)
-	// user is created automatically if not found in getWishlist
-	// router.POST("/users/:id/wishlist", controllers.CreateWishlist)
+	// wishlist is created automatically if not found when getting / adding to wishlist
 	router.GET("/users/:id/wishlist", controllers.GetWishlistByUserID)
 
 	router.POST("users/:id/cartitem", controllers.AddItemToCart)
