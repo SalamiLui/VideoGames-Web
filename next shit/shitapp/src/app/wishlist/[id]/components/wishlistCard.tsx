@@ -1,6 +1,6 @@
 import { VideoGame} from "@/app/home/types";
 import styles from "./wishlistCard.module.css"
-import { ApiError } from "next/dist/server/api-utils";
+import Add2CartButton from "@/app/components/Add2Cart";
 
 interface Prop {
     game : VideoGame
@@ -42,7 +42,12 @@ export default function WishlistCard({game}: Prop){
             <p>Plataforms: {game?.platform?.map(g => g.name).join(", ")}</p>
         </div>
         <div className={styles.buttons}>
-            <button className={styles.btn}>Add to Cart</button>
+            <button
+                className={styles.btn}
+                onClick={()=>{window.location.href = "/games/"+game.id}}
+                >
+                View
+            </button>
             <button
                 className={styles.btn}
                 onClick={deleteItem}

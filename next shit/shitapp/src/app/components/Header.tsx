@@ -60,6 +60,7 @@ export default function Header() {
      localStorage.removeItem("token")
      localStorage.removeItem("userID")
      setUsername(null)
+     window.location.reload()
   }
 
 

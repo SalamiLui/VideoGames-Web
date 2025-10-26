@@ -18,6 +18,30 @@ export default function GameCartItem ({cartItem} : Props){
     cartItem.is_physical = isPhysical
     cartItem.quantity = amount
 
+    function viewClick() {
+        window.location.href = "/games/" + cartItem.videogame.id
+    }
+
+    async function deleteClick() {
+        const userID = localStorage.getItem("userID")
+        try{
+            // router.DELETE("users/:id/cartitem/:itemid", controllers.DeleteItemCart)
+            const API_URL = "http://localhost:8080/users/"+userID+"/cartitem/"+cartItem.id
+            const res = await fetch(API_URL, {
+                method : "DELETE"
+            })
+            if (!res.ok){
+                return
+            }
+            window.location.reload()
+        }catch{
+
+        }
+
+
+
+    }
+
 
     const updateCartItem = async () => {
         const userID = localStorage.getItem("userID")
@@ -60,48 +84,44 @@ export default function GameCartItem ({cartItem} : Props){
     return <>
         <div className={styles.container}>
             <div className={styles.infoCard}>
-                <img src={game.image_url} alt={game.title} />
+                <img className={styles.image} src={game.image_url} alt={game.title} />
                 <div className={styles.mainInfo}>
-                    <h1>{game.title}</h1>
-                    <p>Price: {game.price}</p>
-
-                    <div className={styles.selector}>
-                        <label>
-                            <input
-                                type="radio"
-                                name={`type-${game.id}`}
-                                value="physical"
-                                checked={isPhysical}
-                                onChange={() => setIsPhysical(true)}
-                            />
-                            Físico
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                name={`type-${game.id}`}
-                                value="digital"
-                                checked={!isPhysical}
-                                onChange={() => setIsPhysical(false)}
-                            />
-                            Digital
-                        </label>
-                    </div>
-
-                    <div className={styles.ButtonsStock}>
-                        <StockButton
-                            cartItem={cartItem}
-                            amount={amount}
-                            setAmount={setAmount}>
-                        </StockButton>
+                    <h1 className={styles.title}>{game.title}</h1>
+                    <p className={styles.price}>Price: {game.price}</p>
+                    <div className={styles.manage}>
+                        <div>
+                            <p className={styles.selector}>{isPhysical? "Physical Game":"Digital Game" }</p>
+                            <div className={styles.ButtonsStock}>
+                                <StockButton
+                                    cartItem={cartItem}
+                                    amount={amount}
+                                    setAmount={setAmount}>
+                                </StockButton>
+                            </div>
+                        </div>
+                        <div className={styles.btnManage}>
+                        <button
+                            className={styles.delete}
+                            onClick={deleteClick}>
+                                Delete
+                        </button>
+                        <button
+                            className={styles.view}
+                            onClick={viewClick}>
+                                View
+                        </button>
+                        </div>
                     </div>
                 </div>
+
+
 
             </div>
             <div className={styles.subTotalCard}>
                 <p>SubTotal: </p>
-                <p>{game.price * amount}</p>
+                <p><strong>{game.price * amount}</strong></p>
             </div>
+
         </div>
     </>
 }

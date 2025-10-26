@@ -1,0 +1,11 @@
+.addBtn{
+    font-weight: bold;
+    width: 10rem;
+    padding: 5px;
+    background: linear-gradient(180deg, rgba(180,0,0,0.95), rgba(150,0,0,0.85));
+    color:#fff;
+    box-shadow: 0 6px 18px rgba(182,0,0,0.16);
+    border-radius: 3px;
+    cursor: pointer;
+}
+

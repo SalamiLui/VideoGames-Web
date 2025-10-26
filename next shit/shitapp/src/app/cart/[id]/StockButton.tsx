@@ -1,4 +1,5 @@
 import { CartItem } from "./types";
+import styles from "./cart.module.css"
 
 interface Prop {
     cartItem : CartItem;
@@ -38,11 +39,11 @@ export function StockButton({cartItem, amount, setAmount} : Prop){
     return <>
         <div>
             <div>
-                <button onClick={subAmount}> - </button>
-                <span>{amount}</span>
-                <button onClick={addAmount}> + </button>
+                <button className={styles.btn} onClick={subAmount}> - </button>
+                <span className={styles.amount}>{amount}</span>
+                <button className={styles.btn} onClick={addAmount}> + </button>
             </div>
-            <p>Stock: {stock} </p>
+            <p className={styles.stock}>Stock: {stock} </p>
         </div>
     </>
 }

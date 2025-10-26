@@ -141,11 +141,11 @@ func DeleteItemCart(c *gin.Context) {
 	var cartItem models.CartItem
 
 	db := database.DB
-	if result := db.First(&cartItem, itemID); result.Error != nil {
+	if result := db.Preload("VideoGame").First(&cartItem, itemID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "cart item not found"})
 		return
 	}
-	if result := db.First(&user, userID); result.Error != nil {
+	if result := db.Preload("Cart").First(&user, userID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
 		return
 	}

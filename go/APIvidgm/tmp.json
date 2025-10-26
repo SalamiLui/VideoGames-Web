@@ -14,6 +14,7 @@
     "price" : 500,
     "synopsis" : "Just another shitty game or somehting like that",
     "phy_stock" : 12,
+    "dig_stock" : 9,
     "pegi" : 18,
     "min_req" : "Intel i5, 8GB RAM, GTX 1060",
     "rating" : 5,

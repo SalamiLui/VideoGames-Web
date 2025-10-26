@@ -52,7 +52,7 @@ export default function Cart(){
     return <>
     <div className={styles.pageWrap}>
         <Header></Header>
-        <div>
+        <div className={styles.main}>
             {cartItems.map(
                 cartItem => <GameCartItem key={cartItem.id} cartItem={cartItem} />
             )}

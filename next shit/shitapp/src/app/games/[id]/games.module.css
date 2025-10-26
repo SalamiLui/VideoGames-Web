@@ -3,7 +3,7 @@
   border-radius: 6px;
   display: flex;
   gap: 3rem;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 2rem 2rem;
 }
 
@@ -122,4 +122,17 @@
 @keyframes blink {
   0%, 50%, 100% { opacity: 1; }
   25%, 75% { opacity: 0.5; }
+}
+
+.isPhyContainer {
+  text-align: left;
+  padding-left: 2rem;
+  font-weight: 600;
+  text-justify:inter-word;
+  gap: 1rem;
+  display: flex;
+
+  /* color: white; */
+
+
 }

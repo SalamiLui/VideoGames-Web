@@ -3,7 +3,6 @@ import { useEffect, useState } from "react"
 import styles from "./games.module.css"
 import { VideoGame } from "@/app/home/types"
 
-const userID = localStorage.getItem("userID")
 
 
 
@@ -21,6 +20,7 @@ function isInWishlist(videogames : VideoGame[], game_id: number): boolean {
 }
 
 export default function WishlistButton({game_id} : Props){
+    const userID = localStorage.getItem("userID")
 
     const [text, setText] = useState<string>("Add to WishList")
 
@@ -52,7 +52,7 @@ export default function WishlistButton({game_id} : Props){
             if (!res.ok){
                 return
             }
-            window.location.reload()
+            setText("Add to WishList")
         }
         catch{
 

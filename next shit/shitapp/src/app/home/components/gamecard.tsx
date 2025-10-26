@@ -22,7 +22,7 @@ export default function GameCard({ game }: GameCardProps) {
         </div>
 
         <div className={styles.cardActions}>
-          <button className={styles.addBtn}>Add to Cart</button>
+          {/* <button className={styles.addBtn}>Add to Cart</button> */}
           <Link href={`/games/${game.id}`} className={styles.viewBtn}>View</Link>
         </div>
       </div>

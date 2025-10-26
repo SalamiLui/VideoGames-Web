@@ -5,12 +5,14 @@ import styles from  "./games.module.css"
 import { VideoGame } from "@/app/home/types";
 import { useEffect, useState } from "react";
 import WishlistButton from "./buttonWishlist";
+import Add2CartButton from "@/app/components/Add2Cart";
 
 export default function Game(){
     const params = useParams();
     const id = params.id;
     const [game,  setGame] = useState<VideoGame>()
     const [errorMessage, setErrorMessage] = useState<string |  null>(null)
+    const [isPhy, setIsPhy] = useState<boolean>(true)
 
     useEffect( () => {
         const getGame = async () => {
@@ -78,14 +80,24 @@ export default function Game(){
                 <div className={styles.subMainInfo}>
                   <h1 className={styles.gameTitle}>{game?.title}</h1>
                   <p><strong>Price:</strong> ${game?.price}</p>
-                  <p><strong>Physical Stock:</strong> {game?.phy_stock}</p>
-                  <p><strong>Digital Stock:</strong> {game?.dig_stock}</p>
+
+
+                  <div className={styles.isPhyContainer}>
+                    <label>
+                      <input type="radio" checked={isPhy} onChange={() => setIsPhy(true)}/>
+                      Physical
+                    </label>
+                    <label>
+                      <input type="radio" checked={!isPhy} onChange={ () => setIsPhy(false)}/>
+                      Digital
+                    </label>
+                  </div>
+                  <p><strong>Stock:</strong> {isPhy? game?.phy_stock: game?.dig_stock}</p>
+
+
                   <div className={styles.gameButtons}>
-                    <button className={`${styles.btn} ${styles.redGlow}`}>Add to Cart</button>
+                    <Add2CartButton game={game} isPhy={isPhy}></Add2CartButton>
                     <WishlistButton game_id={game.id}></WishlistButton>
-                    {/* <button
-                      className={`${styles.btn} ${styles.redGlow}`}
-                      onClick={addWishlist}>Add to Wishlist</button> */}
                   </div>
                 </div>
               </div>
