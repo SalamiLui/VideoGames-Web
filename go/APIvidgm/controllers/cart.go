@@ -130,7 +130,7 @@ func UpdateItemCart(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(200, newCartItem)
+	c.IndentedJSON(200, gin.H{"new_total": user.Cart.TotalPrice})
 
 }
 

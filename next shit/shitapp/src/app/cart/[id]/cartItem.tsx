@@ -3,13 +3,15 @@ import styles from "./cart.module.css"
 import { StockButton } from "./StockButton";
 import { useState } from "react";
 import { useEffect } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 interface Props {
     cartItem : CartItem
+    setTotal : Dispatch<SetStateAction<number>>
 }
 
 
-export default function GameCartItem ({cartItem} : Props){
+export default function GameCartItem ({cartItem, setTotal } : Props, ){
     const game = cartItem.videogame
 
     const [amount, setAmount] = useState(cartItem.quantity)
@@ -63,6 +65,9 @@ export default function GameCartItem ({cartItem} : Props){
             if (!res.ok){
                 return
             }
+            const total = await res.json()
+            setTotal(total.new_total)
+
         }catch{
 
         }

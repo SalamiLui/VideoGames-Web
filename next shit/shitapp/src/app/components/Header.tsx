@@ -72,7 +72,8 @@ export default function Header() {
           <img src="/images/jeff.gif" alt="gift" width={85} />
         </div>
         <div className={styles.titleWrap}>
-          <h1 className={styles.siteTitle}>Another Shitty Page</h1>
+          <h1 className={styles.siteTitle}
+              onClick={() => {window.location.href = "/home"}}>Another Shitty Page</h1>
         </div>
 
         <nav className={styles.submenu}>

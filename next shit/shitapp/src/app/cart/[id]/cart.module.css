@@ -23,6 +23,7 @@
 .main {
   display:grid;
   justify-content: center;
+  justify-items: center;
 
 }
 
@@ -176,9 +177,25 @@
   gap: 10px;
 }
 
-/* .amount {
-  background: white;
-  color: black;
+.checkoutBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(180,0,0,0.95), rgba(150,0,0,0.85));
+  width: 200px;
+  margin: 10px;
+  padding: 25px;
+  border-radius: 15px;
+  justify-content: center;
   font-weight: bolder;
-  padding: 8px;
-} */
+  font-size: large;
+  height: 2rem;
+  cursor: pointer;
+}
+
+
+.total {
+  font-weight: 600;
+  font-size: 20;
+  justify-self: center;
+}

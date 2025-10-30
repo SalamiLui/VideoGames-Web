@@ -1,0 +1,39 @@
+
+
+
+
+.image {
+  width: 100px;
+  justify-content: flex-start;
+  margin-right: 20px;
+}
+
+.infoCard {
+  display: flex;
+  background-color: #000000cb;
+  margin: 2rem;
+  padding: 1rem 2rem;
+  min-width: 700px;
+  gap: 3rem;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: 1rem;
+  margin-left: 0;
+
+}
+
+.container {
+  justify-content: flex-start;
+  width: 300px;
+}
+
+
+
+.title {
+  font-size: 25;
+  font-weight: bolder;
+}
+
+.mainInfo {
+  font-size: large;
+}

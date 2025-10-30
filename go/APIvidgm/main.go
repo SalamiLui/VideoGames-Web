@@ -78,6 +78,9 @@ func main() {
 	router.PUT("users/:id/cartitem/:itemid", controllers.UpdateItemCart)
 	router.DELETE("users/:id/cartitem/:itemid", controllers.DeleteItemCart)
 
+	router.GET("/users/:id/directions", controllers.GetUserDirections)
+	router.POST("/users/:id/directions", controllers.NewUserDirection)
+
 	// querry dirID needed in case phyOrders in cart
 	router.PUT("/carts/:id/checkout", controllers.CheckoutCart)
 

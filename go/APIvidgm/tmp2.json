@@ -1,5 +1,10 @@
+
+
+
 {
-    "videogame_id" : 7,
-    "is_physical" : true,
-    "quantity" : 1
+    "street" : "Menchaca 3",
+    "city" : "Queretaro",
+    "state" : "Queretaro",
+    "zip" : "7889",
+    "number" : "69"
 }

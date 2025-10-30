@@ -34,6 +34,7 @@
   text-transform: uppercase;
   animation: vibrate 1s infinite;
   text-shadow: 0 0 12px rgba(182,0,0,0.08), 0 0 2px rgba(255,0,0,0.05);
+  cursor: pointer;
 }
 
 /* vibration / flicker effect */
@@ -117,9 +118,6 @@
   display: block; /* Se muestra al pasar el mouse */
 }
 
-.dropdownItem button {
-  color: blue;
-}
 
 
 
