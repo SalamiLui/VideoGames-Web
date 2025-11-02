@@ -1,13 +1,14 @@
 import { VideoGame} from "@/app/home/types";
 import styles from "./wishlistCard.module.css"
-import Add2CartButton from "@/app/components/Add2Cart";
+import { triggerError, triggerErrorProp, triggerNetworkError } from "@/app/components/errorCard";
 
 interface Prop {
     game : VideoGame
+    t : triggerErrorProp
 }
 
 
-export default function WishlistCard({game}: Prop){
+export default function WishlistCard({game, t}: Prop){
     // user/:id/wishlist/deleteVideogame/:vid
 
     const deleteItem = async () => {
@@ -17,14 +18,16 @@ export default function WishlistCard({game}: Prop){
             const res = await fetch(APTI_URL, {
                 method: "DELETE"
             })
+            const data = await res.json()
             if (!res.ok){
+                triggerError(data, t, res.status)
                 return
             }
             // const data = await res.json()
             window.location.reload()
         }
         catch{
-
+            triggerNetworkError(t)
         }
     }
 

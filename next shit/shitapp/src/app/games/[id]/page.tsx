@@ -6,6 +6,8 @@ import { VideoGame } from "@/app/home/types";
 import { useEffect, useState } from "react";
 import WishlistButton from "./buttonWishlist";
 import Add2CartButton from "@/app/components/Add2Cart";
+import { ErrorInfo, triggerError, triggerErrorProp, triggerNetworkError } from "@/app/components/errorCard";
+import ErrorCard from "@/app/components/errorCard";
 
 export default function Game(){
     const params = useParams();
@@ -13,6 +15,13 @@ export default function Game(){
     const [game,  setGame] = useState<VideoGame>()
     const [errorMessage, setErrorMessage] = useState<string |  null>(null)
     const [isPhy, setIsPhy] = useState<boolean>(true)
+
+    const [errorInfo, setErrorInfo] = useState<ErrorInfo | null>(null)
+    const [showError, setShowError] = useState<boolean>(false)
+    const t : triggerErrorProp = {
+      setInfoError: setErrorInfo,
+      setShowError: setShowError
+    }
 
     useEffect( () => {
         const getGame = async () => {
@@ -24,6 +33,7 @@ export default function Game(){
                 const data = await res.json()
                 if (!res.ok){
                     setErrorMessage(data.message)
+                    triggerError(data, t, res.status)
                     return
                 }
                 setGame(data)
@@ -31,35 +41,13 @@ export default function Game(){
 
             }catch{
                 setErrorMessage("Error loading game,  please try again later")
+                triggerNetworkError(t)
 
             }
         }
         getGame()
     }, []);
 
-    const addWishlist = async () => {
-        const userID = localStorage.getItem("userID")
-	      // router.POST("users/:id/wishlist/addVideogame/:vid", )
-        const API_URL = "http://localhost:8080/users/" + userID + "/wishlist/addVideogame/" + game?.id
-        try {
-            const res = await fetch(API_URL, {
-               method:"POST"
-            })
-            if (res.ok){
-                window.location.href = "/wishlist/" + userID
-                return
-            }
-            const data = await res.json()
-            if (res.status === 409 && data.message === "videogame already in wishlist") { //is this even good?
-                window.location.href = "/wishlist/" + userID
-                return
-            }
-
-        }
-        catch{
-
-        }
-    }
 
 
 
@@ -96,8 +84,8 @@ export default function Game(){
 
 
                   <div className={styles.gameButtons}>
-                    <Add2CartButton game={game} isPhy={isPhy}></Add2CartButton>
-                    <WishlistButton game_id={game.id}></WishlistButton>
+                    <Add2CartButton t={t} game={game} isPhy={isPhy}></Add2CartButton>
+                    <WishlistButton t={t} game_id={game.id}></WishlistButton>
                   </div>
                 </div>
               </div>
@@ -138,6 +126,12 @@ export default function Game(){
 
               </div>
             </div>
+        )}
+        {showError && errorInfo && (
+          <ErrorCard
+            errorNumber={errorInfo.errorNumber}
+            description={errorInfo.description}
+            onClose={()=>{setShowError(false)}}></ErrorCard>
         )}
 
     </div>

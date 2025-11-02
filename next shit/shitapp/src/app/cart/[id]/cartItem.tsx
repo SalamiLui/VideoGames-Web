@@ -4,14 +4,20 @@ import { StockButton } from "./StockButton";
 import { useState } from "react";
 import { useEffect } from "react";
 import { Dispatch, SetStateAction } from "react";
+import { triggerErrorProp } from "@/app/components/errorCard";
+import { ErrorInfo } from "@/app/components/errorCard";
+import { triggerNetworkError } from "@/app/components/errorCard";
+import { triggerError } from "@/app/components/errorCard";
+
 
 interface Props {
     cartItem : CartItem
     setTotal : Dispatch<SetStateAction<number>>
+    t : triggerErrorProp
 }
 
 
-export default function GameCartItem ({cartItem, setTotal } : Props, ){
+export default function GameCartItem ({cartItem, setTotal,t } : Props, ){
     const game = cartItem.videogame
 
     const [amount, setAmount] = useState(cartItem.quantity)
@@ -32,12 +38,14 @@ export default function GameCartItem ({cartItem, setTotal } : Props, ){
             const res = await fetch(API_URL, {
                 method : "DELETE"
             })
+            const data = await res.json()
             if (!res.ok){
+                triggerError(data,t, res.status)
                 return
             }
             window.location.reload()
         }catch{
-
+            triggerNetworkError(t)
         }
 
 
@@ -90,7 +98,7 @@ export default function GameCartItem ({cartItem, setTotal } : Props, ){
         <div className={styles.container}>
             <div className={styles.infoCard}>
                 <img className={styles.image} src={game.image_url} alt={game.title} />
-                <div className={styles.mainInfo}>
+        <div className={styles.mainInfo}>
                     <h1 className={styles.title}>{game.title}</h1>
                     <p className={styles.price}>Price: {game.price}</p>
                     <div className={styles.manage}>

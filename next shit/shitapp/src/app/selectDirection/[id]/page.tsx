@@ -2,6 +2,8 @@
 import Header from "@/app/components/Header"
 import { useEffect, useState } from "react"
 import DirectionCard from "./DirectionCard"
+import ErrorCard, { triggerError, triggerErrorProp, triggerNetworkError } from "@/app/components/errorCard"
+import { ErrorInfo } from "@/app/components/errorCard"
 
 /* type Direction struct {
 	ID     uint   `json:"id" gorm:"primaryKey"`
@@ -28,7 +30,12 @@ export interface Direction {
 export default function ShowDirectionMenu(){
 
     const [directions, setDirections] = useState<Direction[]>([])
-    const [selected, setSelected] = useState<number | null>(null)
+    const [showError, setShowError] = useState<boolean>(false)
+    const [errorProps, setErrorProps] = useState<ErrorInfo | null>(null)
+    const t : triggerErrorProp =  {
+        setInfoError : setErrorProps,
+        setShowError : setShowError
+    }
 
     const directionSelected = (id : number)=> {
         const userID = localStorage.getItem("userID")
@@ -56,14 +63,15 @@ export default function ShowDirectionMenu(){
             const res = await fetch(API_URL, {
 
             })
+            const data = await res.json()
             if (!res.ok){
+                triggerError(data, t, res.status)
                 return
             }
-            const data = await res.json()
             setDirections(data)
         }
         catch{
-
+            triggerNetworkError(t)
         }
     }
 
@@ -126,7 +134,15 @@ export default function ShowDirectionMenu(){
           New Direction
         </button>
       </div>
+      {showError && errorProps && (
+        <ErrorCard
+          errorNumber={errorProps.errorNumber}
+          description={errorProps.description}
+          onClose={()=>{setShowError(false)}}>
+        </ErrorCard>
+      )}
     </div>
+
   );
 
 

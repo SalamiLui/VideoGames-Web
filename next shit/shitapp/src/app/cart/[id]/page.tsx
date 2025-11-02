@@ -5,6 +5,11 @@ import styles from "./cart.module.css"
 import GameCartItem from "./cartItem";
 import { useEffect, useState } from "react";
 import { CartItem } from "./types";
+import ErrorCard from "@/app/components/errorCard";
+import { ErrorInfo } from "@/app/components/errorCard";
+import { triggerError } from "@/app/components/errorCard";
+import { triggerNetworkError } from "@/app/components/errorCard";
+import { triggerErrorProp } from "@/app/components/errorCard";
 
 
 /* type Cart struct {
@@ -28,6 +33,8 @@ export default function Cart(){
 
     const [cartItems, setCartItems] = useState<CartItem[]>([])
     const [total, setTotal] = useState<number>(0)
+    const [showError, setShowError] = useState<boolean>(false)
+    const [errorInfo, setErrorInfo] = useState<ErrorInfo | null>(null)
 
     const checkoutAction = () => {
         const userID = localStorage.getItem("userID")
@@ -59,6 +66,10 @@ export default function Cart(){
 
 
     const getCart = async () => {
+        const t : triggerErrorProp = {
+            setInfoError: setErrorInfo,
+            setShowError: setShowError
+        }
         try{
 
             // router.GET("/users/:id/cart", controllers.GetCartByUserID)
@@ -66,14 +77,20 @@ export default function Cart(){
             const res = await fetch(API_URL, {
                 // TODO send auth jwt when implemented in endpoint
             })
+            const data = await res.json()
             if (!res.ok){
+                const errorMsg = data.message || data.err || "Error desconocido";
+                const err : ErrorInfo = {
+                  errorNumber:res.status,
+                  description:errorMsg,
+                }
+                triggerError(err, t)
                 return
             }
-            const data : Cart = await res.json()
             setCartItems(data.videogames)
             setTotal(data.total_price)
         }catch{
-
+            triggerNetworkError(t)
         }
     }
 
@@ -82,7 +99,12 @@ export default function Cart(){
     }, [])
 
     return <>
-    <div className={styles.pageWrap}>
+<div className="relative min-h-screen w-full bg-cover bg-center bg-no-repeat"
+       style={{ backgroundImage: "url('/images/t1.jpg')" }}
+  >
+    {/* Overlay oscuro */}
+    <div className="absolute inset-0 bg-black/70"></div>
+    {/* <div className={styles.pageWrap}> */}
         <Header></Header>
         <div className={styles.main}>
             {cartItems.map(
@@ -101,6 +123,13 @@ export default function Cart(){
             }
 
         </div>
+        {showError && errorInfo && (
+            <ErrorCard
+                errorNumber={errorInfo.errorNumber}
+                description={errorInfo.description}
+                onClose={()=>{setShowError(false)}}
+            ></ErrorCard>
+        )}
     </div>
 
     </>

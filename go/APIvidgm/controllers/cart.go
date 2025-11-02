@@ -179,15 +179,15 @@ func CheckoutCart(c *gin.Context) {
 	var digOrders models.DigOrder
 	var phyOrders models.PhyOrder
 
-	if result := db.First(&cart, id); result.Error != nil {
+	if result := db.Preload("VideoGames").Preload("VideoGames.VideoGame").First(&cart, id); result.Error != nil {
 		c.IndentedJSON(400, gin.H{"error": "cart not found"})
 		return
 	}
-	for _, v := range *cart.VideoGames {
+	for _, v := range cart.VideoGames {
 		if v.IsPhysical {
-			phyOrders.VideoGames = append(phyOrders.VideoGames, &v)
+			phyOrders.VideoGames = append(phyOrders.VideoGames, v)
 		} else {
-			digOrders.VideoGames = append(digOrders.VideoGames, &v)
+			digOrders.VideoGames = append(digOrders.VideoGames, v)
 		}
 	}
 

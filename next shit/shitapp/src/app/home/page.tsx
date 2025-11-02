@@ -5,11 +5,20 @@ import Header from '../components/Header'
 import GameCard from './components/gamecard'
 import { VideoGame } from './types'
 import styles from './Home.module.css'
+import ErrorCard, { ErrorInfo, triggerError, triggerErrorProp, triggerNetworkError } from '../components/errorCard';
+import { info } from 'console';
 
 export default function Home() {
   const [games, setGames] = useState<VideoGame[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [countdown, setCountdown] = useState({ h: '00', m: '00', s: '00' })
+
+  const [showError, setShowError]= useState<boolean>(false)
+  const [infoError, setInfoErro] = useState<ErrorInfo | null> (null)
+  const t : triggerErrorProp = {
+    setInfoError :setInfoErro,
+    setShowError: setShowError
+  }
 
   const API_URL = 'http://localhost:8080/videogames'
   const PURGE_DATE = new Date('2025-12-31T23:59:59')
@@ -18,11 +27,14 @@ export default function Home() {
     async function load() {
       try {
         const res = await fetch(API_URL)
-        if (!res.ok) throw new Error('Failed to fetch')
-        const data: VideoGame[] = await res.json()
+        const data = await res.json()
+        if (!res.ok) {
+          triggerError(data, t, res.status)
+          return
+        }
         setGames(data)
       } catch (e) {
-        console.error(e)
+        triggerNetworkError(t)
       } finally {
         setLoading(false)
       }
@@ -77,6 +89,12 @@ export default function Home() {
             )}
           </section>
         </main>
+        {showError && infoError && (
+          <ErrorCard
+            description={infoError.description}
+            errorNumber={infoError.errorNumber}
+            onClose={()=>{setShowError(false)}}></ErrorCard>
+        )}
       </div>
     </>
   )

@@ -45,7 +45,7 @@ type VideoGame struct {
 
 type Cart struct {
 	ID         uint        `json:"id" gorm:"primaryKey"`
-	VideoGames *[]CartItem `json:"videogames" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	VideoGames []*CartItem `json:"videogames" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	TotalPrice float64     `json:"total_price"`
 	UserID     uint        `json:"user_id"`
 }

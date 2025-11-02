@@ -6,6 +6,7 @@ import CartItemResume from "./CartItemResume"
 import { CreditCard } from "./CardInfo"
 import CreditCardResume from "./CreditCardResume"
 import type { Direction } from "@/app/selectDirection/[id]/page"
+import ErrorCard, { ErrorInfo, triggerError, triggerErrorProp, triggerNetworkError } from "@/app/components/errorCard"
 
 
 interface Props {
@@ -28,6 +29,35 @@ export default function PurchaseSum({direction, card, setStep} : Props) {
     const [cart, setCart] = useState<Cart>()
     const [dir, setDir] = useState<Direction>()
 
+    const [showError, setShowError] = useState(false)
+    const [infoError, setInfoError] = useState<ErrorInfo | null >(null)
+    const t : triggerErrorProp = {
+      setInfoError: setInfoError,
+      setShowError: setShowError
+    }
+
+    const handleSubmit = async () => {
+        try{
+          // querry dirID needed in case phyOrders in cart
+          // router.PUT("/carts/:id/checkout", controllers.CheckoutCart)
+            let API_URL = "http://localhost:8080/carts/" + cart?.id + "/checkout"
+            API_URL += dir? "?dirID"+dir.id : ""
+            const res = await fetch(API_URL, {
+              method:"PUT"
+
+            })
+            const data = await res.json()
+            if (!res.ok){
+              triggerError(data, t, res.status)
+              return
+            }
+            window.location.href = "/orders/" + userID
+
+        }catch(error){
+            triggerNetworkError(t)
+        }
+    }
+
     const getCart = async () => {
         try{
             // router.GET("/users/:id/cart", controllers.GetCartByUserID)
@@ -35,13 +65,14 @@ export default function PurchaseSum({direction, card, setStep} : Props) {
             const res = await fetch(API_URL, {
                 // TODO send auth jwt when implemented in endpoint
             })
+            const data = await res.json()
             if (!res.ok){
+                triggerError(data, t, res.status)
                 return
             }
-            const data : Cart = await res.json()
             setCart(data)
         }catch{
-
+          triggerNetworkError(t)
         }
     }
 
@@ -54,12 +85,13 @@ export default function PurchaseSum({direction, card, setStep} : Props) {
             const res = await fetch(API_URL, {
                 // TODO send auth jwt when implemented in endpoint
             })
+            const data = await res.json()
             if (!res.ok){
-                return
+              triggerError(data, t, res.status)
+              return
             }
-            const dirs : Direction[] = await res.json()
             let dir : Direction | undefined
-            for (const d of dirs){
+            for (const d of data){
                 if (d.id.toString() === direction){
                     dir = d
                     break
@@ -70,7 +102,7 @@ export default function PurchaseSum({direction, card, setStep} : Props) {
             }
             setDir(dir)
         }catch{
-
+            triggerNetworkError(t)
         }
     }
 
@@ -81,28 +113,6 @@ export default function PurchaseSum({direction, card, setStep} : Props) {
         getDirection()
     },[])
 
-
-
-/*     return <>
-    <div>
-        <Header></Header>
-        <div>
-            {cart?.videogames.map(ci => (<CartItemResume key={ci.id} ci={ci}></CartItemResume>))}
-        </div>
-
-        {dir?
-            <div>
-                <DirectionCard direction={dir}></DirectionCard>
-            </div> : <></>
-        }
-
-        <div>
-            {<CreditCardResume card={card}></CreditCardResume>}
-        </div>
-
-        <button>Confirm</button>
-    </div>
-    </> */
 
     return (
   <>
@@ -150,11 +160,18 @@ export default function PurchaseSum({direction, card, setStep} : Props) {
         {/* Confirm Button */}
         <button
           className="mt-4 px-6 py-3 rounded bg-black text-red-600 hover:bg-red-600 hover:text-black transition-all shadow-sm mx-auto"
+          onClick={handleSubmit}
         >
           Confirm
         </button>
 
       </div>
+      {showError && infoError && (
+        <ErrorCard
+          description={infoError.description}
+          errorNumber={infoError.errorNumber}
+          onClose={()=>{setShowError(false)}}></ErrorCard>
+      )}
     </div>
   </>
 );
