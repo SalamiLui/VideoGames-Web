@@ -3,10 +3,14 @@ package controllers
 import (
 	"APIvdgm/database"
 	"APIvdgm/models"
+	"encoding/json"
 	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/datatypes"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func GetCartByUserID(c *gin.Context) {
@@ -172,93 +176,177 @@ func DeleteItemCart(c *gin.Context) {
 
 }
 
-func CheckoutCart(c *gin.Context) {
-	id := c.Param("id")
-	db := database.DB
+func checkOut(tx *gorm.DB, id string, c *gin.Context) error {
 	var cart models.Cart
 	var digOrders models.DigOrder
 	var phyOrders models.PhyOrder
 
-	if result := db.Preload("VideoGames").Preload("VideoGames.VideoGame").First(&cart, id); result.Error != nil {
-		c.IndentedJSON(400, gin.H{"error": "cart not found"})
-		return
+	if result := tx.Preload("VideoGames").Preload("VideoGames.VideoGame").First(&cart, id); result.Error != nil {
+		return fmt.Errorf("cart not found")
 	}
-	for _, v := range cart.VideoGames {
-		if v.IsPhysical {
-			phyOrders.VideoGames = append(phyOrders.VideoGames, v)
+	for _, i := range cart.VideoGames {
+		var orderI models.OrderItem
+		orderI.Quantity = i.Quantity
+		orderI.VideoGame = i.VideoGame
+		orderI.VideoGameID = i.VideoGame.ID
+
+		if i.IsPhysical {
+			phyOrders.OrderItems = append(phyOrders.OrderItems, &orderI)
 		} else {
-			digOrders.VideoGames = append(digOrders.VideoGames, v)
+			digOrders.OrderItems = append(digOrders.OrderItems, &orderI)
 		}
 	}
 
-	if len(phyOrders.VideoGames) > 0 {
+	if len(phyOrders.OrderItems) > 0 {
 		var dirid uint
 		str := c.Query("dirID")
 		n64, err := strconv.ParseUint(str, 10, 64)
 		if err != nil {
-			c.IndentedJSON(500, gin.H{"error": "dirID querry failed to parse"})
-			return
+			return fmt.Errorf("dirID querry failed to parse")
 		}
 		dirid = uint(n64)
-		err = createPhyOrder(&phyOrders, dirid, cart.UserID)
+		err = createPhyOrder(tx, &phyOrders, dirid, cart.UserID)
 		if err != nil {
-			c.IndentedJSON(500, gin.H{"error": err.Error()})
-			return
+			return err
+		}
+
+	}
+	if len(digOrders.OrderItems) > 0 {
+		// TODO implement security if needed when sending cdkeys
+		err := createDigOrder(tx, &digOrders, cart.UserID)
+		if err != nil {
+			return err
+		}
+		if err := assignCDKeys(tx, &digOrders); err != nil {
+			return err
 		}
 	}
-	if len(digOrders.VideoGames) > 0 {
-		// TODO implement security if needed when sending cdkeys
-		err := createDigOrder(&digOrders, cart.UserID)
-		if err != nil {
-			c.IndentedJSON(500, gin.H{"error": err.Error()})
-			return
-		}
+	if err := tx.Model(&cart).Association("VideoGames").Clear(); err != nil {
+		return err
 	}
 	cart.VideoGames = nil
 	cart.TotalPrice = 0
-	if result := db.Save(&cart); result.Error != nil {
-		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
+	if result := tx.Save(&cart); result.Error != nil {
+		return result.Error
+	}
+	return nil
+
+}
+
+func CheckoutCart(c *gin.Context) {
+	id := c.Param("id")
+	db := database.DB
+
+	err := db.Transaction(func(tx *gorm.DB) error {
+		return checkOut(tx, id, c)
+	})
+
+	if err != nil {
+		c.IndentedJSON(500, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.IndentedJSON(200, gin.H{"message": "checkout completed"})
 
 }
 
-func createPhyOrder(o *models.PhyOrder, directionid, userid uint) error {
-	o.DirectionID = directionid
+func createPhyOrder(tx *gorm.DB, o *models.PhyOrder, directionid, userid uint) error {
 	o.UserID = userid
 	o.Status = string(OrderPending)
-	o.TotalPrice = computeTotalPrice(o.VideoGames)
+	o.TotalPrice = computeTotalPrice(o.OrderItems)
 
-	db := database.DB
-	return db.Create(&o).Error
+	var direction models.Direction
 
-}
+	if result := tx.First(&direction, directionid); result.Error != nil {
+		return result.Error
+	}
+	jsonDir, err := json.Marshal(direction)
+	if err != nil {
+		return err
+	}
+	o.Direction = datatypes.JSON(jsonDir)
 
-func createDigOrder(o *models.DigOrder, userid uint) error {
-	o.UserID = userid
-	o.Status = string(OrderPending)
-	o.TotalPrice = computeTotalPrice(o.VideoGames)
-
-	for _, v := range o.VideoGames {
-		str := strconv.FormatUint(uint64(v.VideoGameID), 10)
-		cdkey, err := getCDKey4Videogame(str)
-		if err != nil {
+	for _, item := range o.OrderItems {
+		if err := manageGamesStock(tx, item.VideoGameID, item.Quantity, true); err != nil {
 			return err
 		}
-		cdkey.State = string(CDKeyReserved)
-		o.CDKeys = append(o.CDKeys, cdkey)
 	}
 
-	db := database.DB
-	return db.Create(&o).Error
+	return tx.Session(&gorm.Session{FullSaveAssociations: true}).Create(&o).Error
 
 }
 
-func computeTotalPrice(items []*models.CartItem) float64 {
+func createDigOrder(tx *gorm.DB, o *models.DigOrder, userid uint) error {
+	o.UserID = userid
+	o.Status = string(OrderPending)
+	o.TotalPrice = computeTotalPrice(o.OrderItems)
+
+	return tx.Session(&gorm.Session{FullSaveAssociations: true}).Create(&o).Error
+
+}
+
+func assignCDKeys(tx *gorm.DB, o *models.DigOrder) error {
+	for _, item := range o.OrderItems {
+		for i := 0; i < item.Quantity; i++ {
+			cdkey, err := getCDKey4Videogame(strconv.FormatUint(uint64(item.VideoGameID), 10))
+			if err != nil {
+				return err
+			}
+
+			cdkey.State = string(CDKeyReserved)
+			cdkey.OrderItemID = &item.ID
+
+			if err := tx.Save(cdkey).Error; err != nil {
+				return err
+			}
+		}
+
+		if err := manageGamesStock(tx, item.VideoGameID, item.Quantity, false); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func computeTotalPrice(items []*models.OrderItem) float64 {
 	sum := float64(0)
 	for _, i := range items {
 		sum += (i.VideoGame.Price * float64(i.Quantity))
 	}
 	return sum
+}
+
+func manageGamesStock(tx *gorm.DB, gameID uint, checkoutQ int, isPhy bool) error {
+
+	var game models.VideoGame
+
+	lockQuery := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+		First(&game, gameID)
+
+	if lockQuery.Error != nil {
+		returnErr := fmt.Errorf("game not found")
+		return returnErr
+	}
+
+	var stock *int
+	if isPhy {
+		stock = &game.PhyStock
+	} else {
+		stock = &game.DigStock
+	}
+
+	// Validar stock suficiente
+	if *stock < checkoutQ {
+		return fmt.Errorf("stock insufficient")
+	}
+
+	// Restar stock
+	*stock -= checkoutQ
+
+	// Guardar cambios
+	if err := tx.Save(&game).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

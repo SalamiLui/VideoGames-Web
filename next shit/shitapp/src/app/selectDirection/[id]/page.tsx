@@ -101,7 +101,7 @@ export default function ShowDirectionMenu(){
 
     return (
     <div
-      className="min-h-screen bg-cover bg-center relative flex flex-col items-center"
+      className="min-h-screen bg-cover bg-center relative flex flex-col items-center bg-fixed"
       style={{ backgroundImage: "url('/images/t1.jpg')" }}
     >
       {/* Overlay negro semitransparente */}

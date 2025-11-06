@@ -84,7 +84,7 @@ export default function Header() {
                 <Link href={`/cart/${userID}`}><span className={styles.dropdownItem}>Cart</span></Link>
                 <Link href={`/wishlist/${userID}`}><span className={styles.dropdownItem}>Wishlist</span></Link>
                 <Link href={`/orders/${userID}`}><span className={styles.dropdownItem}>Orders</span></Link>
-                <Link href="#"><span className={styles.dropdownItem}>Settings</span></Link>
+                <Link href={`/user/${userID}`}><span className={styles.dropdownItem}>Settings</span></Link>
                 <span
                   className={styles.dropdownItem}
                   style={{cursor: 'pointer'}}

@@ -56,3 +56,72 @@ func NewUserDirection(c *gin.Context) {
 
 	c.IndentedJSON(200, direction)
 }
+
+func DeleteDirection(c *gin.Context) {
+	db := database.DB
+	dirID := c.Param("dirID")
+
+	var dir models.Direction
+
+	if result := db.First(&dir, dirID); result.Error != nil {
+		c.IndentedJSON(400, gin.H{"error": "direction not found"})
+		return
+	}
+
+	if result := db.Delete(&dir); result.Error != nil {
+		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
+		return
+	}
+	c.IndentedJSON(200, gin.H{"message": "direction deleted"})
+
+}
+
+func GetDirectionByID(c *gin.Context) {
+	db := database.DB
+	dirID := c.Param("dirID")
+
+	var dir models.Direction
+
+	if result := db.First(&dir, dirID); result.Error != nil {
+		c.IndentedJSON(400, gin.H{"error": "direction not found"})
+		return
+	}
+
+	c.IndentedJSON(200, dir)
+
+}
+
+func ChangeDirection(c *gin.Context) {
+	db := database.DB
+	dirID := c.Param("dirID")
+	UserID := c.Param("id")
+
+	var dir models.Direction
+	var user models.User
+	var newDir models.Direction
+
+	if result := db.First(&user, UserID); result.Error != nil {
+		c.IndentedJSON(400, gin.H{"error": "user not found"})
+		return
+	}
+
+	if result := db.First(&dir, dirID); result.Error != nil {
+		c.IndentedJSON(400, gin.H{"error": "direction not found"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&newDir); err != nil {
+		c.IndentedJSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	newDir.ID = dir.ID
+	newDir.UserID = dir.UserID
+
+	if result := db.Save(&newDir); result.Error != nil {
+		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	c.IndentedJSON(200, nil)
+
+}

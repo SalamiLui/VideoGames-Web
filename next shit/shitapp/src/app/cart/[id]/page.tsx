@@ -35,6 +35,10 @@ export default function Cart(){
     const [total, setTotal] = useState<number>(0)
     const [showError, setShowError] = useState<boolean>(false)
     const [errorInfo, setErrorInfo] = useState<ErrorInfo | null>(null)
+    const t : triggerErrorProp = {
+            setInfoError: setErrorInfo,
+            setShowError: setShowError
+        }
 
     const checkoutAction = () => {
         const userID = localStorage.getItem("userID")
@@ -66,10 +70,7 @@ export default function Cart(){
 
 
     const getCart = async () => {
-        const t : triggerErrorProp = {
-            setInfoError: setErrorInfo,
-            setShowError: setShowError
-        }
+
         try{
 
             // router.GET("/users/:id/cart", controllers.GetCartByUserID)
@@ -79,12 +80,7 @@ export default function Cart(){
             })
             const data = await res.json()
             if (!res.ok){
-                const errorMsg = data.message || data.err || "Error desconocido";
-                const err : ErrorInfo = {
-                  errorNumber:res.status,
-                  description:errorMsg,
-                }
-                triggerError(err, t)
+                triggerError(data, t, res.status)
                 return
             }
             setCartItems(data.videogames)
@@ -103,12 +99,12 @@ export default function Cart(){
        style={{ backgroundImage: "url('/images/t1.jpg')" }}
   >
     {/* Overlay oscuro */}
-    <div className="absolute inset-0 bg-black/70"></div>
+    <div className="absolute inset-0 bg-black/70 pointer-events-none"></div>
     {/* <div className={styles.pageWrap}> */}
         <Header></Header>
         <div className={styles.main}>
             {cartItems.map(
-                cartItem => <GameCartItem key={cartItem.id} setTotal={setTotal} cartItem={cartItem} />
+                cartItem => <GameCartItem key={cartItem.id} t={t} setTotal={setTotal} cartItem={cartItem} />
             )}
             {
                 cartItems.length == 0? <></>:

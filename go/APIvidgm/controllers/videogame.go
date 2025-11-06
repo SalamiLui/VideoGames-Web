@@ -3,15 +3,59 @@ package controllers
 import (
 	"APIvdgm/database"
 	"APIvdgm/models"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 func GetVideogames(c *gin.Context) {
-	var videogames []models.VideoGame
 	db := database.DB
-	db.Find(&videogames)
-	c.IndentedJSON(200, videogames)
+
+	genre := c.Query("genre")
+	platform := c.Query("platform")
+	label := c.Query("label")
+	priceMin := c.Query("price_min")
+	priceMax := c.Query("price_max")
+
+	var games []models.VideoGame
+	query := db.Model(&models.VideoGame{}).Preload("Genre").Preload("Platform").Preload("Label")
+
+	if genre != "" {
+		genres := strings.Split(genre, ",")
+		query = query.Joins("JOIN video_game_genres ON video_games.id = video_game_genres.video_game_id").
+			Joins("JOIN genres ON genres.id = video_game_genres.genre_id").
+			Where("genres.name IN ?", genres)
+	}
+
+	if platform != "" {
+		platforms := strings.Split(platform, ",")
+		query = query.Joins("JOIN video_game_platforms ON video_games.id = video_game_platforms.video_game_id").
+			Joins("JOIN platforms ON platforms.id = video_game_platforms.platform_id").
+			Where("platforms.name IN ?", platforms)
+	}
+
+	if label != "" {
+		labels := strings.Split(label, ",")
+		query = query.Joins("JOIN video_game_labels ON video_games.id = video_game_labels.video_game_id").
+			Joins("JOIN labels ON labels.id = video_game_labels.label_id").
+			Where("labels.name IN ?", labels)
+	}
+
+	if priceMin != "" {
+		query = query.Where("price >= ?", priceMin)
+	}
+
+	if priceMax != "" {
+		query = query.Where("price <= ?", priceMax)
+	}
+
+	if err := query.Find(&games).Error; err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, games)
+
 }
 
 func GetVideogameByID(c *gin.Context) {

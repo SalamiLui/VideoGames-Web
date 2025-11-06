@@ -29,7 +29,7 @@ export function triggerError(data: any, t : triggerErrorProp, status:number| str
 export function triggerNetworkError(t : triggerErrorProp, error : string | null = null)  {
     const err: ErrorInfo = {
           errorNumber:666,
-          description:(error || "Network error, please go f*ck somewhere else")
+          description:(error || "Network error, or u fucked up smthg, congrats")
         }
         t.setInfoError(err)
         t.setShowError(true)

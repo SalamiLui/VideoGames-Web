@@ -41,7 +41,7 @@ export default function PurchaseSum({direction, card, setStep} : Props) {
           // querry dirID needed in case phyOrders in cart
           // router.PUT("/carts/:id/checkout", controllers.CheckoutCart)
             let API_URL = "http://localhost:8080/carts/" + cart?.id + "/checkout"
-            API_URL += dir? "?dirID"+dir.id : ""
+            API_URL += dir? "?dirID="+dir.id : ""
             const res = await fetch(API_URL, {
               method:"PUT"
 

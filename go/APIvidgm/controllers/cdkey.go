@@ -14,6 +14,7 @@ const (
 	CDKeyAvailable CDKeyStatus = "available"
 	CDKeyReserved  CDKeyStatus = "reserved"
 	CDKeyCanceled  CDKeyStatus = "canceled"
+	CDKeyUsed      CDKeyStatus = "used"
 )
 
 func GetCDKey(c *gin.Context) {
@@ -22,6 +23,40 @@ func GetCDKey(c *gin.Context) {
 	var cdkey models.CDKey
 	if result := db.First(&cdkey, id); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "cdkey not found"})
+		return
+	}
+	if cdkey.State == string(CDKeyCanceled) {
+		c.IndentedJSON(403, gin.H{"message": "cdkey canceled"})
+		return
+	}
+	cdkey.State = string(CDKeyUsed)
+	if result := db.Save(&cdkey); result.Error != nil {
+		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
+		return
+	}
+	c.IndentedJSON(200, cdkey)
+
+}
+
+func RefundCDKey(c *gin.Context) {
+	id := c.Param("id")
+	db := database.DB
+	var cdkey models.CDKey
+	if result := db.First(&cdkey, id); result.Error != nil {
+		c.IndentedJSON(404, gin.H{"message": "cdkey not found"})
+		return
+	}
+	if cdkey.State == string(CDKeyCanceled) {
+		c.IndentedJSON(403, gin.H{"message": "cdkey already canceled"})
+		return
+	}
+	if cdkey.State == string(CDKeyUsed) {
+		c.IndentedJSON(403, gin.H{"message": "cdkey already used"})
+		return
+	}
+	cdkey.State = string(CDKeyCanceled)
+	if result := db.Save(&cdkey); result.Error != nil {
+		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
 		return
 	}
 	c.IndentedJSON(200, cdkey)
@@ -42,6 +77,7 @@ func CreateCDKey(c *gin.Context) {
 		c.IndentedJSON(404, gin.H{"message": "videogame not found"})
 		return
 	}
+	cdkey.State = string(CDKeyAvailable)
 	if result := db.Create(&cdkey); result.Error != nil {
 		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
 		return
@@ -54,17 +90,6 @@ func CreateCDKey(c *gin.Context) {
 	}
 
 	c.IndentedJSON(201, cdkey)
-}
-
-func GetCDKey4Videogame(c *gin.Context) {
-	id := c.Param("id")
-	cdkey, err := getCDKey4Videogame(id)
-	if err != nil {
-		c.IndentedJSON(404, gin.H{"message": err.Error()})
-		return
-	}
-	c.IndentedJSON(200, cdkey)
-
 }
 
 func getCDKey4Videogame(id string) (*models.CDKey, error) {

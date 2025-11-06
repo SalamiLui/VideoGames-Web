@@ -27,6 +27,7 @@ func main() {
 		&models.Label{},
 		&models.CDKey{},
 		&models.DigOrder{},
+		&models.OrderItem{},
 	)
 
 	config := cors.Config{
@@ -48,12 +49,10 @@ func main() {
 	router.POST("/videogames", controllers.CreateVideogame)
 	router.DELETE("/videogames/:id", controllers.DeleteVideogame)
 	router.PUT("/videogames/:id", controllers.UpdateVideogame)
-	router.GET("/videogames/:id/cdkey/available", controllers.GetCDKey4Videogame)
 	router.POST("/videogames/:id/user/:uid/newReview", controllers.CreateReview)
 	router.GET("/videogames/:id/reviews/", controllers.GetReviewsByVideogameID)
 
-	// TODO tf implement filters?
-	// router.GET("/videogames/filter/:genreid", controllers.GetVideogamesByCatalog[models.Genre])
+	router.GET("/filters", controllers.GetFilters)
 
 	router.POST("/genres", controllers.CreateCatalog[models.Genre])
 	router.GET("/genres", controllers.GetCatalog[models.Genre])
@@ -80,9 +79,17 @@ func main() {
 
 	router.GET("/users/:id/directions", controllers.GetUserDirections)
 	router.POST("/users/:id/directions", controllers.NewUserDirection)
+	router.DELETE("/users/:id/directions/:dirID", controllers.DeleteDirection)
+	router.GET("/users/:id/directions/:dirID", controllers.GetDirectionByID)
+	router.PUT("/users/:id/directions/:dirID", controllers.ChangeDirection)
 
 	// querry dirID needed in case phyOrders in cart
 	router.PUT("/carts/:id/checkout", controllers.CheckoutCart)
+
+	router.GET("/users/:id/phyOrders", controllers.GetPhyOrders)
+	router.GET("/users/:id/digOrders", controllers.GetDigOrders)
+	router.GET("/phyOrder/:orderID", controllers.GetPhyOrderByID)
+	router.GET("/digOrder/:orderID", controllers.GetDigOrderByID)
 
 	router.POST("users/:id/wishlist/addVideogame/:vid", controllers.AddVideogame2Wishlist)
 	router.DELETE("/users/:id/wishlist/deleteVideogame/:vid", controllers.DeleteVideogameWishlist)
@@ -92,6 +99,7 @@ func main() {
 	router.GET("/cdkeys/:id", controllers.GetCDKey)
 	router.POST("/cdkeys", controllers.CreateCDKey)
 	router.PUT("/cdkeys/:id", controllers.UpdateCDKey)
+	router.PUT("/cdkeys/:id/refund", controllers.RefundCDKey)
 
 	router.Run("localhost:8080")
 

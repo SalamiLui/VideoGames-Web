@@ -1,5 +1,7 @@
 package models
 
+import "gorm.io/datatypes"
+
 type User struct {
 	ID         uint         `json:"id" gorm:"primaryKey"`
 	Username   string       `json:"username" gorm:"unique"`
@@ -59,6 +61,16 @@ type CartItem struct {
 	CartID      uint       `json:"cart_id"`
 }
 
+type OrderItem struct {
+	ID             uint       `json:"id" gorm:"primaryKey"`
+	VideoGame      *VideoGame `json:"videogame" gorm:"constraint:OnUpdate:CASCADE;"`
+	VideoGameID    uint       `json:"videogame_id"`
+	Quantity       int        `json:"quantity"`
+	CDkey          []*CDKey   `json:"cdkey" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	OrderOwnerID   uint
+	OrderOwnerType string // "phy_order" o "dig_order"
+}
+
 type Genre struct {
 	ID   uint   `json:"id" gorm:"primaryKey"`
 	Name string `json:"name" gorm:"unique"`
@@ -79,26 +91,26 @@ type CDKey struct {
 	VideoGameID uint       `json:"videogame_id"`
 	Key         string     `json:"key" gorm:"unique"`
 	State       string     `json:"state"` // available, reserved, sold
-	DigOrderID  uint       `json:"digorder_id"`
+	OrderItem   *OrderItem `json:"order_item" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	OrderItemID *uint      `json:"order_item_id"`
 }
 
 type PhyOrder struct {
-	ID          uint        `json:"id" gorm:"primaryKey"`
-	UserID      uint        `json:"user_id"`
-	VideoGames  []*CartItem `json:"videogames" gorm:"many2many:phy_order_video_games;"`
-	TotalPrice  float64     `json:"total_price"`
-	Status      string      `json:"status"` // pending, completed, canceled
-	Direction   Direction   `json:"direction"`
-	DirectionID uint        `json:"direction_id"`
+	ID         uint           `json:"id" gorm:"primaryKey"`
+	UserID     uint           `json:"user_id"`
+	OrderItems []*OrderItem   `json:"order_items" gorm:"polymorphic:OrderOwner;"`
+	TotalPrice float64        `json:"total_price"`
+	Status     string         `json:"status"` // pending, completed, canceled
+	Direction  datatypes.JSON `json:"direction"`
+	// DirectionID uint         `json:"direction_id"`
 }
 
 type DigOrder struct {
-	ID         uint        `json:"id" gorm:"primaryKey"`
-	UserID     uint        `json:"user_id"`
-	VideoGames []*CartItem `json:"videogames" gorm:"many2many:dig_order_video_games;"`
-	TotalPrice float64     `json:"total_price"`
-	Status     string      `json:"status"` // pending, completed, canceled
-	CDKeys     []*CDKey    `json:"cdkeys"`
+	ID         uint         `json:"id" gorm:"primaryKey"`
+	UserID     uint         `json:"user_id"`
+	OrderItems []*OrderItem `json:"order_items" gorm:"polymorphic:OrderOwner;"`
+	TotalPrice float64      `json:"total_price"`
+	Status     string       `json:"status"` // pending, completed, canceled
 }
 
 type Review struct {
