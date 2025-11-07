@@ -114,13 +114,14 @@ type DigOrder struct {
 }
 
 type Review struct {
-	ID          uint   `json:"id" gorm:"primaryKey"`
-	UserID      uint   `json:"user_id"`
-	Username    string `json:"username"`
-	VideoGameID uint   `json:"videogame_id"`
-	Rating      int    `json:"rating"`
-	Comment     string `json:"comment"`
-	ModStatus   string `json:"modstatus"` // pending, approved, rejected
+	ID            uint   `json:"id" gorm:"primaryKey"`
+	UserID        uint   `json:"user_id"`
+	Username      string `json:"username"`
+	VideoGameID   uint   `json:"videogame_id"`
+	VideoGameName string `json:"videogame_name"`
+	Rating        int    `json:"rating"`
+	Comment       string `json:"comment"`
+	ModStatus     string `json:"modstatus"` // pending, approved, rejected
 }
 
 type WishList struct {

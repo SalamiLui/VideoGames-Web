@@ -42,4 +42,5 @@ export interface Review {
   comment: string;
   modstatus: string;
   username : string
+  videogame_name : string
 }

@@ -13,6 +13,7 @@ export interface Review {
   rating: number;
   comment: string ;
   modstatus: string | undefined;
+  videogame_name : string | undefined
 }
 
 interface reviewProp {
@@ -122,7 +123,7 @@ export default function NewReview(){
             <div className="flex justify-center items-center min-h-[80vh] flex-col">
 
                 <h2 className="text-3xl md:text-4xl font-bold text-red-800 mb-6 drop-shadow-[0_0_6px_rgba(139,0,0,0.4)] tracking-wider">
-                    Review Game
+                    Review {review?.videogame_name}
                 </h2>
                 <form
                 onSubmit={handleSubmit}

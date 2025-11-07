@@ -107,6 +107,27 @@ export default function ReviewsPage(){
               ></div>
 
               {/* Review card */}
+<h3
+  className="
+    text-xl font-extrabold uppercase tracking-wider
+    text-red-500 drop-shadow-[0_0_6px_rgba(255,0,0,0.6)]
+    group-hover:text-red-400
+    transition-colors duration-200
+    px-4 pt-3 pb-1
+    border-b border-neutral-800/70
+    relative
+  "
+>
+  <span
+    className="
+      absolute inset-0 opacity-0 group-hover:opacity-[0.15]
+      bg-[linear-gradient(90deg,transparent,rgba(255,0,0,0.2),transparent)]
+      mix-blend-screen pointer-events-none
+      animate-[glitch_0.3s_ease-in-out_infinite]
+    "
+  ></span>
+  {r.videogame_name}
+</h3>
               <ReviewCard review={r} />
 
               {/* Botones */}

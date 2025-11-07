@@ -81,8 +81,9 @@ func CreateOrUpdateReview(c *gin.Context) {
 	var review models.Review
 	var oldReview models.Review
 	var user models.User
+	var game models.VideoGame
 
-	if result := db.First(&models.VideoGame{}, gameID); result.Error != nil {
+	if result := db.First(&game, gameID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"error": "game not found"})
 		return
 	}
@@ -104,6 +105,7 @@ func CreateOrUpdateReview(c *gin.Context) {
 	review.UserID = user.ID
 	review.ModStatus = string(ReviewPending)
 	review.Username = user.Username
+	review.VideoGameName = game.Title
 
 	if result := db.Save(&review); result.Error != nil {
 		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
