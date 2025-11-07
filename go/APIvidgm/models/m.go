@@ -116,6 +116,7 @@ type DigOrder struct {
 type Review struct {
 	ID          uint   `json:"id" gorm:"primaryKey"`
 	UserID      uint   `json:"user_id"`
+	Username    string `json:"username"`
 	VideoGameID uint   `json:"videogame_id"`
 	Rating      int    `json:"rating"`
 	Comment     string `json:"comment"`

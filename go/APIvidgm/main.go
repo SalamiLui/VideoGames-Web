@@ -41,15 +41,13 @@ func main() {
 	router.Use(cors.New(config))
 
 	// TODO implement Middleware for authentication with the jwt
-
-	// TODO create endopoints with preload for relational models
+	// TODO modify game rating when user rates game and add 2 reviews the game title
 
 	router.GET("/videogames", controllers.GetVideogames)
 	router.GET("/videogames/:id", controllers.GetVideogameByID)
 	router.POST("/videogames", controllers.CreateVideogame)
 	router.DELETE("/videogames/:id", controllers.DeleteVideogame)
 	router.PUT("/videogames/:id", controllers.UpdateVideogame)
-	router.POST("/videogames/:id/user/:uid/newReview", controllers.CreateReview)
 	router.GET("/videogames/:id/reviews/", controllers.GetReviewsByVideogameID)
 
 	router.GET("/filters", controllers.GetFilters)
@@ -94,7 +92,10 @@ func main() {
 	router.POST("users/:id/wishlist/addVideogame/:vid", controllers.AddVideogame2Wishlist)
 	router.DELETE("/users/:id/wishlist/deleteVideogame/:vid", controllers.DeleteVideogameWishlist)
 
-	router.PUT("/review/:id", controllers.UpdateReview)
+	router.GET("/users/:id/games/:gameID/review", controllers.GetReviewByUserAndGame)
+	router.PUT("/users/:id/games/:gameID/review", controllers.CreateOrUpdateReview)
+	router.GET("/users/:id/reviews", controllers.GetReviewsByUser)
+	router.DELETE("/users/:id/review/:reviewID", controllers.DeleteReview)
 
 	router.GET("/cdkeys/:id", controllers.GetCDKey)
 	router.POST("/cdkeys", controllers.CreateCDKey)

@@ -8,6 +8,7 @@ import WishlistButton from "./buttonWishlist";
 import Add2CartButton from "@/app/components/Add2Cart";
 import { ErrorInfo, triggerError, triggerErrorProp, triggerNetworkError } from "@/app/components/errorCard";
 import ErrorCard from "@/app/components/errorCard";
+import ReviewCard from "./reviewCard";
 
 export default function Game(){
     const params = useParams();
@@ -118,7 +119,11 @@ export default function Game(){
 
                   <div className={styles.card}>
                     <p><strong>Reviews:</strong> </p>
-                    <p></p>
+                    {game.reviews.map(r =>
+                      <ReviewCard review={r}></ReviewCard>
+                    )}
+
+
                   </div>
 
                 </div>

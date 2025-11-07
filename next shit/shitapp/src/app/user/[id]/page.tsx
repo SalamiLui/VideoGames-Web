@@ -2,7 +2,7 @@
 import ErrorCard, { ErrorInfo, triggerError, triggerErrorProp, triggerNetworkError } from "@/app/components/errorCard";
 import Header from "@/app/components/Header";
 import { Direction } from "@/app/selectDirection/[id]/page";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 /* type User struct {
 	ID         uint         `json:"id" gorm:"primaryKey"`
@@ -98,7 +98,8 @@ export default function UserSettings() {
 
             <div>
               <h2 className="text-xl text-red-600 font-semibold mb-2">Handle Reviews</h2>
-              <button className="px-6 py-2 bg-black border border-red-600 text-white rounded-md transition-all duration-300 hover:bg-red-700 hover:shadow-[0_0_10px_rgba(255,0,0,0.6)]">
+              <button className="px-6 py-2 bg-black border border-red-600 text-white rounded-md transition-all duration-300 hover:bg-red-700 hover:shadow-[0_0_10px_rgba(255,0,0,0.6)]"
+              onClick={()=>window.location.href = "/user/"+userID+"/reviews"}>
                 Reviews
               </button>
             </div>

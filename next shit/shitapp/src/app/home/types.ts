@@ -31,4 +31,15 @@ export interface VideoGame {
   min_req?: string
   rating: number
   image_url?: string
+  reviews : Review[]
+}
+
+export interface Review {
+  id: number;
+  user_id: number;
+  videogame_id: number;
+  rating: number;
+  comment: string;
+  modstatus: string;
+  username : string
 }
