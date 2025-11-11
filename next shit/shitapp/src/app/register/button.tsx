@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import styles from "./Register.module.css"
+import { SetStateAction } from "react";
+import { Dispatch } from "react";
 
 interface Props {
     label: string;
     texts: string[];
+    setExIndex : Dispatch<SetStateAction<number>> | null
+
 }
 
 const handleClickSound = () => {
@@ -11,11 +15,15 @@ const handleClickSound = () => {
     audio.play();
 }
 
-export default function ChangingButtonText( { label, texts } : Props) {
+export default function ChangingButtonText( { label, texts, setExIndex } : Props) {
     const [index, setIndex] = useState(0);
 
     const changeText = () => {
         setIndex((prevIndex) => (prevIndex + 1) % texts.length);
+        if (setExIndex) {
+            setExIndex(index)
+            console.log(index)
+        }
         handleClickSound();
     }
 
@@ -28,3 +36,5 @@ export default function ChangingButtonText( { label, texts } : Props) {
     </button>
     </>
 }
+
+

@@ -41,6 +41,7 @@ type VideoGame struct {
 	PEGI        int         `json:"pegi"`
 	MinReq      string      `json:"min_req"`
 	Rating      float64     `json:"rating"`
+	SumRating   int64       `json:"sum_rating"`
 	Reviews     []*Review   `json:"reviews" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	ImageURL    string      `json:"image_url"`
 }
@@ -93,6 +94,7 @@ type CDKey struct {
 	State       string     `json:"state"` // available, reserved, sold
 	OrderItem   *OrderItem `json:"order_item" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	OrderItemID *uint      `json:"order_item_id"`
+	UserID      *uint      `json:"user_id"`
 }
 
 type PhyOrder struct {

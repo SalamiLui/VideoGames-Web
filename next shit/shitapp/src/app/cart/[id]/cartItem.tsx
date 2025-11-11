@@ -35,8 +35,12 @@ export default function GameCartItem ({cartItem, setTotal,t } : Props, ){
         try{
             // router.DELETE("users/:id/cartitem/:itemid", controllers.DeleteItemCart)
             const API_URL = "http://localhost:8080/users/"+userID+"/cartitem/"+cartItem.id
+            const token = localStorage.getItem("token")
             const res = await fetch(API_URL, {
-                method : "DELETE"
+                method : "DELETE",
+                headers : {
+                    "Authorization": `Bearer ${token}`
+                }
             })
             const data = await res.json()
             if (!res.ok){
@@ -57,12 +61,14 @@ export default function GameCartItem ({cartItem, setTotal,t } : Props, ){
         const userID = localStorage.getItem("userID")
 
         const API_URL = "http://localhost:8080/users/" + userID + "/cartitem/" + cartItem.id
+        const token = localStorage.getItem("token")
 
         try{
             const res = await fetch(API_URL, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     id: cartItem.id,
@@ -70,13 +76,15 @@ export default function GameCartItem ({cartItem, setTotal,t } : Props, ){
                     is_physical: isPhysical
                 }),
             });
+            const data = await res.json()
             if (!res.ok){
+                triggerError(data, t, res.status)
                 return
             }
-            const total = await res.json()
-            setTotal(total.new_total)
+            setTotal(data.new_total)
 
         }catch{
+            triggerNetworkError(t)
 
         }
     }

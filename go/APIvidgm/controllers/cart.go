@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"APIvdgm/database"
+	"APIvdgm/middleware"
 	"APIvdgm/models"
 	"encoding/json"
 	"fmt"
@@ -14,12 +15,17 @@ import (
 )
 
 func GetCartByUserID(c *gin.Context) {
+
 	userID := c.Param("id")
 	var user models.User
 	var cart models.Cart
 	db := database.DB
 	if result := db.Preload("Cart.VideoGames.VideoGame").Find(&user, userID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
 		return
 	}
 	if user.Cart == nil {
@@ -63,6 +69,10 @@ func AddItemToCart(c *gin.Context) {
 	db := database.DB
 	if result := db.Preload("Cart").Find(&user, userID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
 		return
 	}
 	if user.Cart == (nil) {
@@ -112,6 +122,10 @@ func UpdateItemCart(c *gin.Context) {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
 		return
 	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 	if user.Cart == nil {
 		c.IndentedJSON(404, gin.H{"message": "user has no cart"})
 		return
@@ -153,6 +167,10 @@ func DeleteItemCart(c *gin.Context) {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
 		return
 	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 	if user.Cart == nil {
 		c.IndentedJSON(404, gin.H{"message": "user has no cart"})
 		return
@@ -183,6 +201,9 @@ func checkOut(tx *gorm.DB, id string, c *gin.Context) error {
 
 	if result := tx.Preload("VideoGames").Preload("VideoGames.VideoGame").First(&cart, id); result.Error != nil {
 		return fmt.Errorf("cart not found")
+	}
+	if err := middleware.CheckAuthExpectedUser(c, cart.UserID); err != nil {
+		return err
 	}
 	for _, i := range cart.VideoGames {
 		var orderI models.OrderItem
@@ -295,6 +316,7 @@ func assignCDKeys(tx *gorm.DB, o *models.DigOrder) error {
 
 			cdkey.State = string(CDKeyReserved)
 			cdkey.OrderItemID = &item.ID
+			cdkey.UserID = &o.UserID
 
 			if err := tx.Save(cdkey).Error; err != nil {
 				return err

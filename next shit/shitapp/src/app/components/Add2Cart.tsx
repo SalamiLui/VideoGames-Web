@@ -4,14 +4,16 @@ import { VideoGame} from "../home/types"
 import { Cart } from "../cart/[id]/page";
 import { CartItem } from "../cart/[id]/types";
 import styles from "./add2cart.module.css"
+import { triggerError, triggerErrorProp, triggerNetworkError } from "./errorCard";
 
 interface Props {
     game : VideoGame;
     isPhy : boolean
+    t : triggerErrorProp
 }
 
 
-export default function Add2CartButton({game, isPhy}: Props){
+export default function Add2CartButton({game, isPhy, t}: Props){
     const stock = isPhy? game.phy_stock : game.dig_stock
     if (!stock || stock <= 0){
         return
@@ -38,10 +40,12 @@ export default function Add2CartButton({game, isPhy}: Props){
         try{
             // router.POST("users/:id/cartitem", controllers.AddItemToCart)
             const API_URL = "http://localhost:8080/users/"+userID+"/cartitem"
+            const token = localStorage.getItem("token")
             const res = await fetch(API_URL, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     videogame_id : game.id,
@@ -49,13 +53,15 @@ export default function Add2CartButton({game, isPhy}: Props){
                     quantity : 1,
                 }),
             })
+            const data = await res.json()
             if (!res.ok){
+                triggerError(data, t, res.status)
                 return
             }
             window.location.href = "/cart/" + userID
 
         }catch{
-
+            triggerNetworkError(t)
         }
     }
 
@@ -64,16 +70,22 @@ export default function Add2CartButton({game, isPhy}: Props){
         try{
             // router.DELETE("users/:id/cartitem/:itemid", controllers.DeleteItemCart)
             const API_URL = "http://localhost:8080/users/"+userID+"/cartitem/"+cartItemID
+            const token = localStorage.getItem("token")
             const res = await fetch(API_URL, {
-                method : "DELETE"
+                method : "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             })
+            const data = await res.json()
             if (!res.ok){
-                const data = await res.json()
+                triggerError(data, t, res.status)
                 return
             }
             setText("Add to Cart")
 
         }catch{
+            triggerNetworkError(t)
 
         }
 
@@ -82,15 +94,19 @@ export default function Add2CartButton({game, isPhy}: Props){
     const initButton = async () => {
         if (!userID){return}
         const API_URL = "http://localhost:8080/users/" + userID + "/cart"
+        const token = localStorage.getItem("token")
          try{
             const res = await fetch(API_URL, {
-                // TODO send auth jwt when implemented in endpoint
+                headers:{
+                    "Authorization": `Bearer ${token}`
+                }
             })
+            const data = await res.json()
             if (!res.ok){
+                triggerError(data, t, res.status)
                 return
             }
-            const cart : Cart = await res.json()
-            if (isAlreadyInCart(cart.videogames)){
+            if (isAlreadyInCart(data.videogames)){
                 setText("Delete from Cart")
             }
             else {
@@ -98,6 +114,7 @@ export default function Add2CartButton({game, isPhy}: Props){
             }
 
         }catch{
+            triggerNetworkError(t)
 
         }
     }
@@ -112,9 +129,11 @@ export default function Add2CartButton({game, isPhy}: Props){
         return false
     }
 
-    useEffect(()=>{
+    initButton()
+
+    /* useEffect(()=>{
         initButton()
-    }, [isPhy])
+    }, []) */
 
     return <>
         <button

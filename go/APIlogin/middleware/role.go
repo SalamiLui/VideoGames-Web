@@ -23,7 +23,7 @@ func VerifyRole(expectedRole roles.Role) gin.HandlerFunc {
 		tokenString := parts[1]
 		claims, ok := controllers.CheckJWT(tokenString)
 		if !ok {
-			c.AbortWithStatusJSON(401, gin.H{"error": "Invalid token"})
+			c.AbortWithStatusJSON(401, gin.H{"error": "Invalid token / no authorization"})
 			return
 		}
 		if claims.Role != string(expectedRole) {

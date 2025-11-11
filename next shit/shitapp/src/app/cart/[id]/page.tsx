@@ -75,8 +75,11 @@ export default function Cart(){
 
             // router.GET("/users/:id/cart", controllers.GetCartByUserID)
             const API_URL = "http://localhost:8080/users/" + userID + "/cart"
+            const token = localStorage.getItem("token")
             const res = await fetch(API_URL, {
-                // TODO send auth jwt when implemented in endpoint
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             })
             const data = await res.json()
             if (!res.ok){

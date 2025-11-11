@@ -26,9 +26,14 @@ export default function ReviewsPage(){
 
         // router.DELETE("/users/:id/review/:reviewID", controllers.DeleteReview)
         const API_URL = "http://localhost:8080/users/"+userID+"/review/"+id
+        const token = localStorage.getItem("token")
         try {
             const res = await fetch(API_URL, {
-                method:"DELETE"
+                method:"DELETE",
+                headers:{
+
+                  "Authorization": `Bearer ${token}`
+                }
 
             })
             const data = await res.json()
@@ -49,8 +54,13 @@ export default function ReviewsPage(){
     const getReviews = async ()=>{
         // router.GET("/users/:id/reviews", controllers.GetReviewsByUser)
         const API_URL = "http://localhost:8080/users/"+userID+"/reviews"
+        const token = localStorage.getItem("token")
         try {
             const res = await fetch(API_URL, {
+              headers:{
+
+                "Authorization": `Bearer ${token}`
+              }
 
             })
             const data = await res.json()

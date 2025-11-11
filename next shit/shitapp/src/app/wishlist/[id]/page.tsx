@@ -21,10 +21,15 @@ export default function Wishlist(){
 
     useEffect(()=>{
         const API_URL = "http://localhost:8080/users/" + userID + "/wishlist"
+        const token = localStorage.getItem("token")
         async function getWishlist(){
             try{
                 const res = await fetch(API_URL, {
                     method: "GET",
+                    headers:{
+
+                        "Authorization": `Bearer ${token}`
+                    }
                 })
                 const data = await res.json()
                 if (!res.ok){

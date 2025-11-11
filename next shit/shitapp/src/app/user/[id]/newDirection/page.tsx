@@ -24,10 +24,14 @@ export default function NewDirection(){
         try{
             // router.POST("/users/:id/directions", controllers.NewUserDirection)
             const APIT_URL = "http://localhost:8080/users/" + userID + "/directions"
+            const token = localStorage.getItem("token")
             const res = await fetch(APIT_URL, {
                 method:"POST",
                 body: JSON.stringify(d),
-                headers: {'Content-Type': 'application/json'}
+                headers: {
+                  'Content-Type': 'application/json',
+                  "Authorization": `Bearer ${token}`
+                }
             })
             const data = await res.json()
             if (!res.ok){

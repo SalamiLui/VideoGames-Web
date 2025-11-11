@@ -43,8 +43,8 @@ export default function Register() {
     })
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [cheatsIndex, setCheatsIndex] = useState(1)
 
-    const API_URL = "http://localhost:8081/signup";
 
     const handleSubmit = async (e : FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -70,12 +70,19 @@ export default function Register() {
             setErrorMessage("You must accept our terms and conditions :)");
             return;
         }
+        let API_URL = "http://localhost:8081/signup";
+        let jwt : string | null = ""
+        if (cheatsIndex === 0){
+            API_URL += "/admin"
+            jwt = localStorage.getItem("token")
+        }
 
         try {
             const res = await fetch(API_URL, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${jwt}`,
                 },
                 body: JSON.stringify({
                     username: user.username,
@@ -151,19 +158,24 @@ export default function Register() {
                         </input>
                         <ChangingButtonText
                             label="Genre:"
-                            texts={["Male","Washing machine"]}>
+                            texts={["Male","Washing machine"]}
+                            setExIndex={null}>
                         </ChangingButtonText>
                         <ChangingButtonText
                             label="Difficulty:"
-                            texts={["Peaceful","Easy","Normal","Hard"]}>
+                            texts={["Peaceful","Easy","Normal","Hard"]}
+                            setExIndex={null}>
                         </ChangingButtonText>
                         <ChangingButtonText
                             label="Skin Color:"
-                            texts={["Black","Brown","Beige","White"]}>
+                            texts={["Black","Brown","Beige","White"]}
+                            setExIndex={null}>
                         </ChangingButtonText>
                         <ChangingButtonText
                             label="Cheats:"
-                            texts={["Off", "On"]}>
+                            texts={["Off", "On"]}
+                            setExIndex={setCheatsIndex}>
+
                         </ChangingButtonText>
                     </div>
                     <label className={styles.label}>

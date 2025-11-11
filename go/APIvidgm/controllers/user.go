@@ -2,17 +2,23 @@ package controllers
 
 import (
 	"APIvdgm/database"
+	"APIvdgm/middleware"
 	"APIvdgm/models"
 
 	"github.com/gin-gonic/gin"
 )
 
 func GetUserByID(c *gin.Context) {
+
 	id := c.Param("id")
 	var user models.User
 	db := database.DB
 	if result := db.Preload("Cart").First(&user, id); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
 		return
 	}
 	c.IndentedJSON(200, user)
@@ -24,6 +30,10 @@ func GetUserDirections(c *gin.Context) {
 	db := database.DB
 	if result := db.Preload("Directions").First(&user, id); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
 		return
 	}
 	c.IndentedJSON(200, user.Directions)
@@ -45,6 +55,11 @@ func NewUserDirection(c *gin.Context) {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
 		return
 	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
+
 	if err := db.Model(&user).Association("Directions").Append(&direction); err != nil {
 		c.IndentedJSON(500, gin.H{"error": err.Error()})
 		return
@@ -68,6 +83,11 @@ func DeleteDirection(c *gin.Context) {
 		return
 	}
 
+	if err := middleware.CheckAuthExpectedUser(c, dir.UserID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
+
 	if result := db.Delete(&dir); result.Error != nil {
 		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
 		return
@@ -86,6 +106,10 @@ func GetDirectionByID(c *gin.Context) {
 		c.IndentedJSON(400, gin.H{"error": "direction not found"})
 		return
 	}
+	if err := middleware.CheckAuthExpectedUser(c, dir.UserID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.IndentedJSON(200, dir)
 
@@ -102,6 +126,10 @@ func ChangeDirection(c *gin.Context) {
 
 	if result := db.First(&user, UserID); result.Error != nil {
 		c.IndentedJSON(400, gin.H{"error": "user not found"})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
 		return
 	}
 

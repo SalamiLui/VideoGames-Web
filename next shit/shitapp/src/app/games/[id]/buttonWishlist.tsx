@@ -2,12 +2,14 @@
 import { useEffect, useState } from "react"
 import styles from "./games.module.css"
 import { VideoGame } from "@/app/home/types"
+import { triggerError, triggerErrorProp, triggerNetworkError } from "@/app/components/errorCard"
 
 
 
 
 interface Props {
     game_id : number
+    t : triggerErrorProp
 }
 
 function isInWishlist(videogames : VideoGame[], game_id: number): boolean {
@@ -19,25 +21,32 @@ function isInWishlist(videogames : VideoGame[], game_id: number): boolean {
     return false
 }
 
-export default function WishlistButton({game_id} : Props){
+export default function WishlistButton({game_id, t } : Props){
     const userID = localStorage.getItem("userID")
 
     const [text, setText] = useState<string>("Add to WishList")
 
     const Add2Wishlist  = async ()  => {
         const API_URL = "http://localhost:8080/users/" + userID + "/wishlist/addVideogame/" + game_id
+        const token = localStorage.getItem("token")
         try {
             const res = await fetch(API_URL, {
-               method:"POST"
+               method:"POST",
+               headers: {
+
+                    "Authorization": `Bearer ${token}`
+               }
             })
+            const data = await res.json()
             if (res.ok){
                 window.location.href = "/wishlist/" + userID
                 return
             }
+            triggerError(data,t, res.status )
             // handle error
         }
         catch{
-
+            triggerNetworkError(t)
         }
 
     }
@@ -45,9 +54,14 @@ export default function WishlistButton({game_id} : Props){
     const DeleteFromWishlist = async () => {
         const userID  = localStorage.getItem("userID")
         const APTI_URL = "http://localhost:8080/users/" + userID + "/wishlist/deleteVideogame/" + game_id
+        const token = localStorage.getItem("token")
         try {
             const res = await fetch(APTI_URL, {
-                method: "DELETE"
+                method: "DELETE",
+                headers: {
+
+                    "Authorization": `Bearer ${token}`
+                }
             })
             if (!res.ok){
                 return
@@ -78,8 +92,14 @@ export default function WishlistButton({game_id} : Props){
                 return
             }
             const API_URL = "http://localhost:8080/users/" + userID + "/wishlist"
+            const token = localStorage.getItem("token")
             try{
-                const res = await fetch(API_URL)
+                const res = await fetch(API_URL, {
+                    headers: {
+
+                        "Authorization": `Bearer ${token}`
+                    }
+                })
                 if (!res.ok){
                     return
                 }

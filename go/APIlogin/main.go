@@ -42,6 +42,12 @@ func main() {
 
 	// TODO implement recover password
 
+	/* router.POST(
+	"/signup/root",
+	func(c *gin.Context) {
+		controllers.SignUp(c, roles.Root)
+	}) */
+
 	router.Run("localhost:8081")
 
 }

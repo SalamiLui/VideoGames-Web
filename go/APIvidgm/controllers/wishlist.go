@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"APIvdgm/database"
+	"APIvdgm/middleware"
 	"APIvdgm/models"
 
 	"github.com/gin-gonic/gin"
@@ -33,6 +34,10 @@ func AddVideogame2Wishlist(c *gin.Context) {
 
 	if result := db.Preload("WishList.VideoGames").First(&user, userID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
 		return
 	}
 	if result := db.First(&videogame, videogameID); result.Error != nil {
@@ -80,6 +85,10 @@ func DeleteVideogameWishlist(c *gin.Context) {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
 		return
 	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 	if result := db.First(&videogame, videogameID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "videogame not found"})
 		return
@@ -100,6 +109,10 @@ func GetWishlistByUserID(c *gin.Context) {
 		Preload("WishList.VideoGames.Platform").
 		First(&user, userID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "user not found"})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
 		return
 	}
 	if user.WishList == nil {

@@ -31,8 +31,13 @@ export default function DigOrderPage(){
     const getPhyOrder = async () => {
         // router.GET("/digOrder/:orderID", controllers.GetDigOrderByID)
         const API_URL = "http://localhost:8080/digOrder/"+digOrderID
+        const token = localStorage.getItem("token")
         try{
             const res = await fetch(API_URL, {
+              headers:{
+
+                "Authorization": `Bearer ${token}`
+              }
 
             })
             const data = await  res.json()

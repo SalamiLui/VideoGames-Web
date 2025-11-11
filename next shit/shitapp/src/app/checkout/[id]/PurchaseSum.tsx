@@ -41,9 +41,13 @@ export default function PurchaseSum({direction, card, setStep} : Props) {
           // querry dirID needed in case phyOrders in cart
           // router.PUT("/carts/:id/checkout", controllers.CheckoutCart)
             let API_URL = "http://localhost:8080/carts/" + cart?.id + "/checkout"
+            const token = localStorage.getItem("token")
             API_URL += dir? "?dirID="+dir.id : ""
             const res = await fetch(API_URL, {
-              method:"PUT"
+              method:"PUT",
+              headers: {
+                "Authorization": `Bearer ${token}`
+              }
 
             })
             const data = await res.json()
@@ -62,7 +66,11 @@ export default function PurchaseSum({direction, card, setStep} : Props) {
         try{
             // router.GET("/users/:id/cart", controllers.GetCartByUserID)
             const API_URL = "http://localhost:8080/users/" + userID + "/cart"
+            const token = localStorage.getItem("token")
             const res = await fetch(API_URL, {
+              headers : {
+                "Authorization": `Bearer ${token}`
+              }
                 // TODO send auth jwt when implemented in endpoint
             })
             const data = await res.json()
@@ -82,8 +90,11 @@ export default function PurchaseSum({direction, card, setStep} : Props) {
         try{
             // router.GET("/users/:id/directions", controllers.GetUserDirections)
             const API_URL = "http://localhost:8080/users/" + userID + "/directions"
+            const token = localStorage.getItem("token")
             const res = await fetch(API_URL, {
-                // TODO send auth jwt when implemented in endpoint
+              headers : {
+                "Authorization": `Bearer ${token}`
+              }
             })
             const data = await res.json()
             if (!res.ok){

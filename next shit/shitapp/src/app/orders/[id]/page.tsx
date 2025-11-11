@@ -80,8 +80,13 @@ export default function Orders(){
     const getPhyOrders = async () => {
         // router.GET("/users/:id/phyOrders", controllers.GetPhyOrders)
         const API_URL = "http://localhost:8080/users/"+ userID+ "/phyOrders"
+          const token = localStorage.getItem("token")
         try{
             const res = await fetch(API_URL, {
+              headers:{
+
+                "Authorization": `Bearer ${token}`
+              }
 
             })
             const data = await  res.json()
@@ -101,8 +106,13 @@ export default function Orders(){
     const getDigOrders  = async () => {
         // router.GET("/users/:id/digOrders", controllers.GetDigOrders)
         const API_URL = "http://localhost:8080/users/"+userID +"/digOrders"
+            const token = localStorage.getItem("token")
         try{
             const res = await fetch(API_URL, {
+              headers: {
+
+                "Authorization": `Bearer ${token}`
+              }
 
             })
             const data = await  res.json()

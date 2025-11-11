@@ -8,9 +8,17 @@ interface HeaderProps {
   cartCount?: number
 }
 
+enum Role {
+  slave = "slave",
+  admin = "admin",
+  root = 'root'
+
+}
+
 export default function Header() {
   const [username, setUsername] = useState<string | null>(null);
   const [userID, setUserID] = useState<number>();
+  const [role, setRole] = useState<string>();
 
   useEffect(() => {
 
@@ -43,6 +51,7 @@ export default function Header() {
 
         setUsername(data.claims.username);
         setUserID(data.claims.user_id)
+        setRole(data.claims.role)
         localStorage.setItem("userID", data.claims.user_id);
       }
       catch (error) {
@@ -91,6 +100,17 @@ export default function Header() {
                   onClick={handleLogout}>
                   logout
                 </span>
+                {(role === Role.admin || role === Role.root)  && (
+                    <span
+                    className={styles.dropdownItem}
+                    style={{cursor: 'pointer'}}
+                    onClick={()=>window.location.href = "/admin"}
+                    >
+                      <img width={50} src="/images/jeff.gif" alt="jeff" />
+
+                    </span>
+                )}
+
 
               </div>
             </div>

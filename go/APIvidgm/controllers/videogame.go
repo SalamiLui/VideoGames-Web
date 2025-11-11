@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"APIvdgm/database"
+	"APIvdgm/middleware"
 	"APIvdgm/models"
+	"APIvdgm/roles"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -70,11 +72,20 @@ func GetVideogameByID(c *gin.Context) {
 }
 
 func CreateVideogame(c *gin.Context) {
+	if err := middleware.CheckAuthExpectedMinRole(c, roles.Admin); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 	var videogame models.VideoGame
 	if err := c.ShouldBindJSON(&videogame); err != nil {
 		c.IndentedJSON(400, gin.H{"error": err.Error()})
 		return
 	}
+	videogame.Rating = 0
+	videogame.DigStock = 0
+	videogame.Reviews = nil
+	videogame.SumRating = 0
+
 	db := database.DB
 	if result := db.Create(&videogame); result.Error != nil {
 		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
@@ -84,6 +95,10 @@ func CreateVideogame(c *gin.Context) {
 }
 
 func DeleteVideogame(c *gin.Context) {
+	if err := middleware.CheckAuthExpectedMinRole(c, roles.Admin); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 	id := c.Param("id")
 	var videogame models.VideoGame
 	db := database.DB
@@ -95,6 +110,10 @@ func DeleteVideogame(c *gin.Context) {
 }
 
 func UpdateVideogame(c *gin.Context) {
+	if err := middleware.CheckAuthExpectedMinRole(c, roles.Admin); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 	id := c.Param("id")
 	var newVideogame models.VideoGame
 	var oldVideogame models.VideoGame
@@ -103,15 +122,33 @@ func UpdateVideogame(c *gin.Context) {
 		return
 	}
 	db := database.DB
-	if result := db.First(&oldVideogame, id); result.Error != nil {
+	if result := db.Preload("Genre").Preload("Platform").Preload("Label").First(&oldVideogame, id); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "videogame not found"})
 		return
 	}
 	newVideogame.ID = oldVideogame.ID
+	newVideogame.Rating = oldVideogame.Rating
+	newVideogame.DigStock = oldVideogame.DigStock
+	newVideogame.SumRating = oldVideogame.SumRating
+
+	// TODO add transanction to roollback
 	if result := db.Save(&newVideogame); result.Error != nil {
 		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
 		return
 	}
+	if err := db.Model(&oldVideogame).Association("Genre").Replace(newVideogame.Genre); err != nil {
+		c.IndentedJSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	if err := db.Model(&oldVideogame).Association("Platform").Replace(newVideogame.Platform); err != nil {
+		c.IndentedJSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	if err := db.Model(&oldVideogame).Association("Label").Replace(newVideogame.Label); err != nil {
+		c.IndentedJSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.IndentedJSON(200, newVideogame)
 
 }

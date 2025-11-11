@@ -33,8 +33,13 @@ export default function PhyOrderPage(){
 
         // router.GET("/phyOrder/:orderID", controllers.GetPhyOrderByID)
         const API_URL = "http://localhost:8080/phyOrder/"+phyOrderID
+        const token = localStorage.getItem("token")
         try{
             const res = await fetch(API_URL, {
+              headers: {
+
+                "Authorization": `Bearer ${token}`
+              }
 
             })
             const data = await  res.json()

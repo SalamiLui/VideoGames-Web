@@ -13,10 +13,15 @@ export default function WishlistCard({game, t}: Prop){
 
     const deleteItem = async () => {
         const userID  = localStorage.getItem("userID")
+        const token = localStorage.getItem("token")
         const APTI_URL = "http://localhost:8080/users/" + userID + "/wishlist/deleteVideogame/" + game.id
         try {
             const res = await fetch(APTI_URL, {
-                method: "DELETE"
+                method: "DELETE",
+                headers:{
+
+                    "Authorization": `Bearer ${token}`
+                }
             })
             const data = await res.json()
             if (!res.ok){

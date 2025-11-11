@@ -47,8 +47,13 @@ export default function NewReview(){
     const getReview = async () => {
         // router.GET("/users/:id/games/:gameID", controllers.GetReviewByUserAndGame)
         const API_URL = "http://localhost:8080/users/"+userID+"/games/"+gameID+"/review"
+        const token = localStorage.getItem("token")
         try{
             const res = await fetch(API_URL, {
+                headers:{
+
+                    "Authorization": `Bearer ${token}`
+                }
 
             })
             const data = await res.json()
@@ -90,11 +95,15 @@ export default function NewReview(){
     const uplaodReview= async (r : reviewProp) => {
         // router.PUT("/users/:id/games/:gameID/review", controllers.CreateOrUpdateReview)
         const API_URL = "http://localhost:8080/users/"+userID+"/games/"+gameID+"/review"
+        const token = localStorage.getItem("token")
         try{
             const res = await fetch(API_URL, {
                 method:"PUT",
                 body: JSON.stringify(r),
-                headers: {'Content-Type': 'application/json'}
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                }
             })
             const data = await res.json()
             if (!res.ok){

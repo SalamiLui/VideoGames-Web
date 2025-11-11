@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"APIvdgm/database"
+	"APIvdgm/middleware"
 	"APIvdgm/models"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +26,15 @@ func GetPhyOrders(c *gin.Context) {
 		Preload("PhyOrders.OrderItems.VideoGame").
 		First(&user, id); result.Error != nil {
 		c.IndentedJSON(400, gin.H{"error": "User not found"})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
 		return
 	}
 	c.IndentedJSON(200, user.PhyOrders)
@@ -55,6 +65,10 @@ func GetPhyOrderByID(c *gin.Context) {
 		c.IndentedJSON(400, gin.H{"error": "order not found"})
 		return
 	}
+	if err := middleware.CheckAuthExpectedUser(c, phyOrder.UserID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 	c.IndentedJSON(200, phyOrder)
 }
 
@@ -70,6 +84,10 @@ func GetDigOrderByID(c *gin.Context) {
 		Preload("OrderItems.VideoGame").
 		First(&digOrder, digOrderID); result.Error != nil {
 		c.IndentedJSON(400, gin.H{"error": "order not found"})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, digOrder.UserID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
 		return
 	}
 	c.IndentedJSON(200, digOrder)

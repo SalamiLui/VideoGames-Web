@@ -2,7 +2,10 @@ package controllers
 
 import (
 	"APIvdgm/database"
+	"APIvdgm/middleware"
 	"APIvdgm/models"
+	"APIvdgm/roles"
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -62,6 +65,10 @@ func GetReviewByUserAndGame(c *gin.Context) {
 		c.IndentedJSON(404, gin.H{"error": "user not found"})
 		return
 	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 	if result := db.First(&models.VideoGame{}, gameID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"error": "videogame not found"})
 		return
@@ -91,13 +98,19 @@ func CreateOrUpdateReview(c *gin.Context) {
 		c.IndentedJSON(404, gin.H{"error": "user not found"})
 		return
 	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 	if err := c.ShouldBindJSON(&review); err != nil {
 		c.IndentedJSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	rating2sum := review.Rating
 	result := db.Where("user_id = ? AND video_game_id = ?", userID, gameID).First(&oldReview)
 	if result.Error == nil {
 		review.ID = oldReview.ID
+		rating2sum -= oldReview.Rating
 	}
 
 	gid, _ := strconv.ParseUint(gameID, 10, 64)
@@ -107,7 +120,16 @@ func CreateOrUpdateReview(c *gin.Context) {
 	review.Username = user.Username
 	review.VideoGameName = game.Title
 
+	// TODO transaction to rollback
+
 	if result := db.Save(&review); result.Error != nil {
+		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
+		return
+	}
+	cnt := db.Model(&game).Association("Reviews").Count()
+	game.SumRating += int64(rating2sum)
+	game.Rating = float64(game.SumRating) / float64(cnt)
+	if result := db.Save(&game); result.Error != nil {
 		c.IndentedJSON(500, gin.H{"error": result.Error.Error()})
 		return
 	}
@@ -122,6 +144,14 @@ func GetReviewsByUser(c *gin.Context) {
 
 	if result := db.Preload("Reviews").First(&user, userID); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"error": "user not found"})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, user.ID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
 		return
 	}
 	c.IndentedJSON(200, user.Reviews)
@@ -153,4 +183,54 @@ func DeleteReview(c *gin.Context) {
 		return
 	}
 	c.IndentedJSON(200, gin.H{"message": "ok"})
+}
+
+func GetReviews(c *gin.Context) {
+	db := database.DB
+	var reviews []models.Review
+
+	if result := db.Find(&reviews); result.Error != nil {
+		c.IndentedJSON(404, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	c.IndentedJSON(200, reviews)
+
+}
+
+func changeModStatusReview(status ModStatus, reviewID string) (int, error) {
+	db := database.DB
+	var review models.Review
+
+	if result := db.First(&review, reviewID); result.Error != nil {
+		return 404, fmt.Errorf("review not found")
+	}
+	review.ModStatus = string(status)
+	if result := db.Save(&review); result.Error != nil {
+		return 500, result.Error
+	}
+	return 200, nil
+
+}
+
+func ApproveReview(c *gin.Context) {
+	id := c.Param("id")
+	middleware.CheckAuthExpectedMinRole(c, roles.Admin)
+	code, err := changeModStatusReview(ReviewApproved, id)
+	if err != nil {
+		c.IndentedJSON(code, gin.H{"error": err.Error()})
+		return
+	}
+	c.IndentedJSON(200, nil)
+}
+
+func RejectReview(c *gin.Context) {
+	id := c.Param("id")
+	middleware.CheckAuthExpectedMinRole(c, roles.Admin)
+	code, err := changeModStatusReview(ReviewRejected, id)
+	if err != nil {
+		c.IndentedJSON(code, gin.H{"error": err.Error()})
+		return
+	}
+	c.IndentedJSON(200, nil)
 }

@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"APIvdgm/database"
+	"APIvdgm/middleware"
 	"APIvdgm/models"
+	"APIvdgm/roles"
 	"errors"
 
 	"github.com/gin-gonic/gin"
@@ -21,10 +23,19 @@ func GetCDKey(c *gin.Context) {
 	id := c.Param("id")
 	db := database.DB
 	var cdkey models.CDKey
-	if result := db.First(&cdkey, id); result.Error != nil {
+	if result := db.Preload("OrderItem").First(&cdkey, id); result.Error != nil {
 		c.IndentedJSON(404, gin.H{"message": "cdkey not found"})
 		return
 	}
+	if cdkey.UserID == nil || cdkey.OrderItem == nil {
+		c.IndentedJSON(403, gin.H{"message": "Permission denied, cdkey without owner"})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, *cdkey.UserID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
+
 	if cdkey.State == string(CDKeyCanceled) {
 		c.IndentedJSON(403, gin.H{"message": "cdkey canceled"})
 		return
@@ -46,6 +57,14 @@ func RefundCDKey(c *gin.Context) {
 		c.IndentedJSON(404, gin.H{"message": "cdkey not found"})
 		return
 	}
+	if cdkey.UserID == nil || cdkey.OrderItemID == nil {
+		c.IndentedJSON(403, gin.H{"message": "Permision denied, cdkey without owner"})
+		return
+	}
+	if err := middleware.CheckAuthExpectedUser(c, *cdkey.UserID); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 	if cdkey.State == string(CDKeyCanceled) {
 		c.IndentedJSON(403, gin.H{"message": "cdkey already canceled"})
 		return
@@ -64,6 +83,10 @@ func RefundCDKey(c *gin.Context) {
 }
 
 func CreateCDKey(c *gin.Context) {
+	if err := middleware.CheckAuthExpectedMinRole(c, roles.Admin); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 	var cdkey models.CDKey
 	var videogame models.VideoGame
 
@@ -108,6 +131,10 @@ func getCDKey4Videogame(id string) (*models.CDKey, error) {
 }
 
 func UpdateCDKey(c *gin.Context) {
+	if err := middleware.CheckAuthExpectedMinRole(c, roles.Admin); err != nil {
+		c.IndentedJSON(403, gin.H{"error": err.Error()})
+		return
+	}
 	id := c.Param("id")
 	var newCDKey models.CDKey
 	var oldCDKey models.CDKey

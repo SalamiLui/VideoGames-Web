@@ -3,6 +3,7 @@ package main
 import (
 	"APIvdgm/controllers"
 	"APIvdgm/database"
+	"APIvdgm/middleware"
 	"APIvdgm/models"
 
 	"github.com/gin-contrib/cors"
@@ -40,67 +41,80 @@ func main() {
 
 	router.Use(cors.New(config))
 
-	// TODO implement Middleware for authentication with the jwt
+	authGroup := router.Group("/")
+	authGroup.Use(middleware.VerifyJWT())
+	{
+		authGroup.POST("/videogames", controllers.CreateVideogame)
+		authGroup.DELETE("/videogames/:id", controllers.DeleteVideogame)
+		authGroup.PUT("/videogames/:id", controllers.UpdateVideogame)
+
+		authGroup.POST("/genres", controllers.CreateCatalog[models.Genre])
+		authGroup.GET("/genres", controllers.GetCatalog[models.Genre])
+		authGroup.GET("/genres/:id", controllers.GetCatalogByID[models.Genre])
+		authGroup.DELETE("/genres/:id", controllers.DeleteCatalog[models.Genre])
+
+		authGroup.POST("/labels", controllers.CreateCatalog[models.Label])
+		authGroup.GET("/labels", controllers.GetCatalog[models.Label])
+		authGroup.GET("/labels/:id", controllers.GetCatalogByID[models.Label])
+		authGroup.DELETE("/labels/:id", controllers.DeleteCatalog[models.Label])
+
+		authGroup.POST("/platforms", controllers.CreateCatalog[models.Platform])
+		authGroup.GET("/platforms", controllers.GetCatalog[models.Platform])
+		authGroup.GET("/platforms/:id", controllers.GetCatalogByID[models.Platform])
+		authGroup.DELETE("/platforms/:id", controllers.DeleteCatalog[models.Platform])
+
+		authGroup.GET("/users/:id", controllers.GetUserByID)
+
+		// cart is created automatically if not found when getting / adding to cart
+		authGroup.GET("/users/:id/cart", controllers.GetCartByUserID)
+
+		// wishlist is created automatically if not found when getting / adding to wishlist
+		authGroup.GET("/users/:id/wishlist", controllers.GetWishlistByUserID)
+
+		authGroup.POST("users/:id/cartitem", controllers.AddItemToCart)
+		authGroup.PUT("users/:id/cartitem/:itemid", controllers.UpdateItemCart)
+		authGroup.DELETE("users/:id/cartitem/:itemid", controllers.DeleteItemCart)
+
+		// querry dirID needed in case phyOrders in cart
+		authGroup.PUT("/carts/:id/checkout", controllers.CheckoutCart)
+
+		authGroup.GET("/users/:id/directions", controllers.GetUserDirections)
+		authGroup.POST("/users/:id/directions", controllers.NewUserDirection)
+		authGroup.DELETE("/users/:id/directions/:dirID", controllers.DeleteDirection)
+		authGroup.GET("/users/:id/directions/:dirID", controllers.GetDirectionByID)
+		authGroup.PUT("/users/:id/directions/:dirID", controllers.ChangeDirection)
+
+		authGroup.GET("/users/:id/phyOrders", controllers.GetPhyOrders)
+		authGroup.GET("/users/:id/digOrders", controllers.GetDigOrders)
+		authGroup.GET("/phyOrder/:orderID", controllers.GetPhyOrderByID)
+		authGroup.GET("/digOrder/:orderID", controllers.GetDigOrderByID)
+
+		authGroup.POST("users/:id/wishlist/addVideogame/:vid", controllers.AddVideogame2Wishlist)
+		authGroup.DELETE("/users/:id/wishlist/deleteVideogame/:vid", controllers.DeleteVideogameWishlist)
+
+		authGroup.GET("/users/:id/games/:gameID/review", controllers.GetReviewByUserAndGame)
+		authGroup.PUT("/users/:id/games/:gameID/review", controllers.CreateOrUpdateReview)
+		authGroup.GET("/users/:id/reviews", controllers.GetReviewsByUser)
+		authGroup.DELETE("/users/:id/review/:reviewID", controllers.DeleteReview)
+
+		authGroup.PUT("/reviews/:id/approve", controllers.ApproveReview)
+		authGroup.PUT("/reviews/:id/reject", controllers.RejectReview)
+
+		authGroup.GET("/cdkeys/:id", controllers.GetCDKey)
+		authGroup.POST("/cdkeys", controllers.CreateCDKey)
+		authGroup.PUT("/cdkeys/:id", controllers.UpdateCDKey)
+		authGroup.PUT("/cdkeys/:id/refund", controllers.RefundCDKey)
+
+	}
+
 	// TODO modify game rating when user rates game and add 2 reviews the game title
 
 	router.GET("/videogames", controllers.GetVideogames)
 	router.GET("/videogames/:id", controllers.GetVideogameByID)
-	router.POST("/videogames", controllers.CreateVideogame)
-	router.DELETE("/videogames/:id", controllers.DeleteVideogame)
-	router.PUT("/videogames/:id", controllers.UpdateVideogame)
 	router.GET("/videogames/:id/reviews/", controllers.GetReviewsByVideogameID)
-
 	router.GET("/filters", controllers.GetFilters)
 
-	router.POST("/genres", controllers.CreateCatalog[models.Genre])
-	router.GET("/genres", controllers.GetCatalog[models.Genre])
-	router.DELETE("/genres/:id", controllers.DeleteCatalog[models.Genre])
-
-	router.POST("/labels", controllers.CreateCatalog[models.Label])
-	router.GET("/labels", controllers.GetCatalog[models.Label])
-	router.DELETE("/labels/:id", controllers.DeleteCatalog[models.Label])
-
-	router.POST("/platforms", controllers.CreateCatalog[models.Platform])
-	router.GET("/platforms", controllers.GetCatalog[models.Platform])
-	router.DELETE("/platforms/:id", controllers.DeleteCatalog[models.Platform])
-
-	router.GET("/users/:id", controllers.GetUserByID)
-
-	// cart is create automatically if not found when getting / adding to cart
-	router.GET("/users/:id/cart", controllers.GetCartByUserID)
-	// wishlist is created automatically if not found when getting / adding to wishlist
-	router.GET("/users/:id/wishlist", controllers.GetWishlistByUserID)
-
-	router.POST("users/:id/cartitem", controllers.AddItemToCart)
-	router.PUT("users/:id/cartitem/:itemid", controllers.UpdateItemCart)
-	router.DELETE("users/:id/cartitem/:itemid", controllers.DeleteItemCart)
-
-	router.GET("/users/:id/directions", controllers.GetUserDirections)
-	router.POST("/users/:id/directions", controllers.NewUserDirection)
-	router.DELETE("/users/:id/directions/:dirID", controllers.DeleteDirection)
-	router.GET("/users/:id/directions/:dirID", controllers.GetDirectionByID)
-	router.PUT("/users/:id/directions/:dirID", controllers.ChangeDirection)
-
-	// querry dirID needed in case phyOrders in cart
-	router.PUT("/carts/:id/checkout", controllers.CheckoutCart)
-
-	router.GET("/users/:id/phyOrders", controllers.GetPhyOrders)
-	router.GET("/users/:id/digOrders", controllers.GetDigOrders)
-	router.GET("/phyOrder/:orderID", controllers.GetPhyOrderByID)
-	router.GET("/digOrder/:orderID", controllers.GetDigOrderByID)
-
-	router.POST("users/:id/wishlist/addVideogame/:vid", controllers.AddVideogame2Wishlist)
-	router.DELETE("/users/:id/wishlist/deleteVideogame/:vid", controllers.DeleteVideogameWishlist)
-
-	router.GET("/users/:id/games/:gameID/review", controllers.GetReviewByUserAndGame)
-	router.PUT("/users/:id/games/:gameID/review", controllers.CreateOrUpdateReview)
-	router.GET("/users/:id/reviews", controllers.GetReviewsByUser)
-	router.DELETE("/users/:id/review/:reviewID", controllers.DeleteReview)
-
-	router.GET("/cdkeys/:id", controllers.GetCDKey)
-	router.POST("/cdkeys", controllers.CreateCDKey)
-	router.PUT("/cdkeys/:id", controllers.UpdateCDKey)
-	router.PUT("/cdkeys/:id/refund", controllers.RefundCDKey)
+	router.GET("/reviews", controllers.GetReviews)
 
 	router.Run("localhost:8080")
 
