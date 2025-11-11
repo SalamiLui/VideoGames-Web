@@ -1,0 +1,1960 @@
+definitions:
+  models.CDKey:
+    properties:
+      id:
+        type: integer
+      key:
+        type: string
+      order_item:
+        $ref: '#/definitions/models.OrderItem'
+      order_item_id:
+        type: integer
+      state:
+        description: available, reserved, sold
+        type: string
+      user_id:
+        type: integer
+      videogame:
+        $ref: '#/definitions/models.VideoGame'
+      videogame_id:
+        type: integer
+    type: object
+  models.Cart:
+    properties:
+      id:
+        type: integer
+      total_price:
+        type: number
+      user_id:
+        type: integer
+      videogames:
+        items:
+          $ref: '#/definitions/models.CartItem'
+        type: array
+    type: object
+  models.CartItem:
+    properties:
+      cart_id:
+        type: integer
+      id:
+        type: integer
+      is_physical:
+        type: boolean
+      quantity:
+        type: integer
+      videogame:
+        $ref: '#/definitions/models.VideoGame'
+      videogame_id:
+        type: integer
+    type: object
+  models.DigOrder:
+    properties:
+      id:
+        type: integer
+      order_items:
+        items:
+          $ref: '#/definitions/models.OrderItem'
+        type: array
+      status:
+        description: pending, completed, canceled
+        type: string
+      total_price:
+        type: number
+      user_id:
+        type: integer
+    type: object
+  models.Direction:
+    properties:
+      city:
+        type: string
+      id:
+        type: integer
+      number:
+        type: string
+      state:
+        type: string
+      street:
+        type: string
+      user_id:
+        type: integer
+      zip:
+        type: string
+    type: object
+  models.Genre:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Label:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.OrderItem:
+    properties:
+      cdkey:
+        items:
+          $ref: '#/definitions/models.CDKey'
+        type: array
+      id:
+        type: integer
+      orderOwnerID:
+        type: integer
+      orderOwnerType:
+        description: '"phy_order" o "dig_order"'
+        type: string
+      quantity:
+        type: integer
+      videogame:
+        $ref: '#/definitions/models.VideoGame'
+      videogame_id:
+        type: integer
+    type: object
+  models.PhyOrder:
+    properties:
+      id:
+        type: integer
+      order_items:
+        items:
+          $ref: '#/definitions/models.OrderItem'
+        type: array
+      status:
+        description: pending, completed, canceled
+        type: string
+      total_price:
+        type: number
+      user_id:
+        type: integer
+    type: object
+  models.Platform:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Review:
+    properties:
+      comment:
+        type: string
+      id:
+        type: integer
+      modstatus:
+        description: pending, approved, rejected
+        type: string
+      rating:
+        type: integer
+      user_id:
+        type: integer
+      username:
+        type: string
+      videogame_id:
+        type: integer
+      videogame_name:
+        type: string
+    type: object
+  models.User:
+    properties:
+      cart:
+        $ref: '#/definitions/models.Cart'
+      dig_orders:
+        items:
+          $ref: '#/definitions/models.DigOrder'
+        type: array
+      directions:
+        items:
+          $ref: '#/definitions/models.Direction'
+        type: array
+      id:
+        type: integer
+      mail:
+        type: string
+      password:
+        type: string
+      phy_orders:
+        items:
+          $ref: '#/definitions/models.PhyOrder'
+        type: array
+      reviews:
+        items:
+          $ref: '#/definitions/models.Review'
+        type: array
+      role:
+        type: string
+      username:
+        type: string
+      wishlist:
+        $ref: '#/definitions/models.WishList'
+    type: object
+  models.VideoGame:
+    properties:
+      developer:
+        type: string
+      dig_stock:
+        type: integer
+      genre:
+        items:
+          $ref: '#/definitions/models.Genre'
+        type: array
+      id:
+        type: integer
+      image_url:
+        type: string
+      label:
+        items:
+          $ref: '#/definitions/models.Label'
+        type: array
+      min_req:
+        type: string
+      pegi:
+        type: integer
+      phy_stock:
+        type: integer
+      platform:
+        items:
+          $ref: '#/definitions/models.Platform'
+        type: array
+      price:
+        type: number
+      rating:
+        type: number
+      release_year:
+        type: integer
+      reviews:
+        items:
+          $ref: '#/definitions/models.Review'
+        type: array
+      sum_rating:
+        type: integer
+      synopsis:
+        type: string
+      title:
+        type: string
+    type: object
+  models.WishList:
+    properties:
+      id:
+        type: integer
+      user_id:
+        type: integer
+      videogames:
+        items:
+          $ref: '#/definitions/models.VideoGame'
+        type: array
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Shit documentation for shit API.
+  termsOfService: http://swagger.io/terms/
+  title: VideoGames API
+  version: "1.0"
+paths:
+  /cart/{id}/checkout:
+    post:
+      consumes:
+      - application/json
+      description: Processes the checkout of a user's cart, creating digital and/or
+        physical orders. Physical orders require a delivery address ID provided via
+        query parameter `dirID`. Requires authentication and the same user ID.
+      parameters:
+      - description: Cart ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Delivery address ID (required if cart contains physical items)
+        in: query
+        name: dirID
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Checkout completed successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid or missing parameters
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Cart not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Checkout user's cart
+      tags:
+      - Cart
+  /catalog:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all entries from a specific catalog (e.g., Genre, Platform,
+        or Label).
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of catalog entries
+          schema:
+            items:
+              type: object
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all catalog entries
+      tags:
+      - Catalog
+    post:
+      consumes:
+      - application/json
+      description: Creates a new catalog record (e.g., Genre, Platform, or Label).
+        Requires admin privileges.
+      parameters:
+      - description: Catalog data (Genre, Platform, or Label)
+        in: body
+        name: catalog
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Catalog entry created successfully
+          schema:
+            type: object
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new catalog entry
+      tags:
+      - Catalog
+  /catalog/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a catalog entry (e.g., Genre, Platform, or Label) by its
+        ID. Requires admin privileges.
+      parameters:
+      - description: Catalog entry ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Catalog entry deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid catalog ID or entry not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a catalog entry
+      tags:
+      - Catalog
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a single catalog entry (e.g., Genre, Platform, or Label)
+        by its ID.
+      parameters:
+      - description: Catalog entry ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Catalog entry data
+          schema:
+            type: object
+        "404":
+          description: Catalog entry not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a catalog entry by ID
+      tags:
+      - Catalog
+  /cdkeys:
+    post:
+      consumes:
+      - application/json
+      description: Allows an admin to create a new CD key associated with a specific
+        videogame. The videogame's digital stock is incremented by 1. Requires admin
+        privileges.
+      parameters:
+      - description: CD key data to create
+        in: body
+        name: cdkey
+        required: true
+        schema:
+          $ref: '#/definitions/models.CDKey'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: CD key created successfully
+          schema:
+            $ref: '#/definitions/models.CDKey'
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden – insufficient privileges
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Videogame not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new CD key for a videogame
+      tags:
+      - CDKeys
+  /cdkeys/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns a CD key by ID and marks it as used if valid. Only the
+        owner of the CD key can access it.
+      parameters:
+      - description: CD Key ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: CD key retrieved successfully
+          schema:
+            $ref: '#/definitions/models.CDKey'
+        "403":
+          description: Forbidden – not the owner or CD key canceled
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: CD key not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve and activate a CD key
+      tags:
+      - CDKeys
+    put:
+      consumes:
+      - application/json
+      description: Allows an admin to update the details of an existing CD key. Requires
+        admin privileges.
+      parameters:
+      - description: CD Key ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated CD key data
+        in: body
+        name: cdkey
+        required: true
+        schema:
+          $ref: '#/definitions/models.CDKey'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: CD key updated successfully
+          schema:
+            $ref: '#/definitions/models.CDKey'
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden – insufficient privileges
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: CD key not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing CD key
+      tags:
+      - CDKeys
+  /cdkeys/{id}/refund:
+    patch:
+      consumes:
+      - application/json
+      description: Allows the owner of a CD key to cancel it (refund). Only CD keys
+        that are neither used nor already canceled can be refunded. Requires authentication
+        as the owner.
+      parameters:
+      - description: CD Key ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: CD key successfully refunded (canceled)
+          schema:
+            $ref: '#/definitions/models.CDKey'
+        "403":
+          description: Forbidden – not the owner, CD key already used, or CD key without
+            owner
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: CD key not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Refund a CD key
+      tags:
+      - CDKeys
+  /directions/{dirID}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a specific delivery direction by its ID. Requires authentication
+        and that the direction belongs to the authenticated user.
+      parameters:
+      - description: Direction ID
+        in: path
+        name: dirID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Direction deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Direction not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a user's delivery direction
+      tags:
+      - Directions
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a specific delivery direction by its ID. Requires authentication
+        and that the direction belongs to the authenticated user.
+      parameters:
+      - description: Direction ID
+        in: path
+        name: dirID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Direction'
+        "400":
+          description: Direction not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a delivery direction by ID
+      tags:
+      - Directions
+  /filters:
+    get:
+      consumes:
+      - application/json
+      description: Returns all available genres, platforms, and labels that can be
+        used as filters for videogames.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Object containing arrays of genres, platforms, and labels
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Retrieve all available filters for videogames
+      tags:
+      - Filters
+  /orders/digital/{orderID}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a specific digital order by its ID, including order items,
+        their associated video games, and CD keys (without exposing sensitive data).
+        Requires authentication as the order's owner.
+      parameters:
+      - description: Digital Order ID
+        in: path
+        name: orderID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Digital order details
+          schema:
+            $ref: '#/definitions/models.DigOrder'
+        "400":
+          description: Order not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a digital order by ID
+      tags:
+      - Orders
+  /orders/physical/{orderID}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a specific physical order by its ID, including all order
+        items and their associated video games. Requires authentication as the order's
+        owner.
+      parameters:
+      - description: Physical Order ID
+        in: path
+        name: orderID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Physical order details
+          schema:
+            $ref: '#/definitions/models.PhyOrder'
+        "400":
+          description: Order not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a physical order by ID
+      tags:
+      - Orders
+  /reviews:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all reviews from all users for all videogames. Requires
+        appropriate access if restricted.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all reviews
+          schema:
+            items:
+              $ref: '#/definitions/models.Review'
+            type: array
+        "404":
+          description: Error retrieving reviews
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Retrieve all reviews
+      tags:
+      - Reviews
+  /reviews/{id}/approve:
+    patch:
+      consumes:
+      - application/json
+      description: Allows an admin to approve a pending review, changing its moderation
+        status to "approved".
+      parameters:
+      - description: Review ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review approved successfully
+          schema:
+            type: string
+        "403":
+          description: Forbidden – insufficient privileges
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Review not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Approve a user review
+      tags:
+      - Reviews
+  /reviews/{id}/reject:
+    patch:
+      consumes:
+      - application/json
+      description: Allows an admin to reject a pending review, changing its moderation
+        status to "rejected".
+      parameters:
+      - description: Review ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review rejected successfully
+          schema:
+            type: string
+        "403":
+          description: Forbidden – insufficient privileges
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Review not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Reject a user review
+      tags:
+      - Reviews
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a user by ID along with their cart information. Requires
+        authentication and the same user ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a user by ID
+      tags:
+      - Users
+  /users/{id}/cart:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a user's cart along with its video games. If the cart
+        does not exist, a new one is created automatically. Requires authentication
+        and the same user ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Cart'
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a user's cart by user ID
+      tags:
+      - Cart
+  /users/{id}/cart/items:
+    post:
+      consumes:
+      - application/json
+      description: Adds a video game to the user's cart. If the cart does not exist,
+        it is created automatically. Requires authentication and the same user ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Cart item data (includes VideoGameID and Quantity)
+        in: body
+        name: cartItem
+        required: true
+        schema:
+          $ref: '#/definitions/models.CartItem'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.CartItem'
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User or video game not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add an item to a user's cart
+      tags:
+      - Cart
+  /users/{id}/cart/items/{itemid}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a specific video game from the user's cart and updates
+        the total price. Requires authentication and the same user ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Cart item ID
+        in: path
+        name: itemid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Cart item deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User, cart, or cart item not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a cart item
+      tags:
+      - Cart
+    put:
+      consumes:
+      - application/json
+      description: Updates the quantity of a specific cart item for a user. Recalculates
+        the cart's total price. Requires authentication and the same user ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Cart item ID
+        in: path
+        name: itemid
+        required: true
+        type: integer
+      - description: Updated cart item data (quantity)
+        in: body
+        name: cartItem
+        required: true
+        schema:
+          $ref: '#/definitions/models.CartItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated total price
+          schema:
+            additionalProperties:
+              format: float64
+              type: number
+            type: object
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User, cart, or cart item not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a cart item
+      tags:
+      - Cart
+  /users/{id}/directions:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all saved delivery directions for a specific user. Requires
+        authentication and the same user ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of user's delivery directions
+          schema:
+            items:
+              $ref: '#/definitions/models.Direction'
+            type: array
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user's delivery directions
+      tags:
+      - Directions
+    post:
+      consumes:
+      - application/json
+      description: Creates and associates a new delivery direction with the specified
+        user. Requires authentication and the same user ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New delivery direction data
+        in: body
+        name: direction
+        required: true
+        schema:
+          $ref: '#/definitions/models.Direction'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Direction'
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a new delivery direction for a user
+      tags:
+      - Directions
+  /users/{id}/directions/{dirID}:
+    put:
+      consumes:
+      - application/json
+      description: Updates the details of an existing delivery direction. Requires
+        authentication and that the direction belongs to the authenticated user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Direction ID
+        in: path
+        name: dirID
+        required: true
+        type: integer
+      - description: Updated delivery direction data
+        in: body
+        name: direction
+        required: true
+        schema:
+          $ref: '#/definitions/models.Direction'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Direction updated successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: User or direction not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a user's delivery direction
+      tags:
+      - Directions
+  /users/{id}/orders/digital:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all digital orders for a specific user, including order
+        items and their associated video games. Requires authentication and the same
+        user ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of user's digital orders
+          schema:
+            items:
+              $ref: '#/definitions/models.DigOrder'
+            type: array
+        "400":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user's digital orders
+      tags:
+      - Orders
+  /users/{id}/orders/physical:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all physical orders for a specific user, including order
+        items and their associated video games. Requires authentication and the same
+        user ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of user's physical orders
+          schema:
+            items:
+              $ref: '#/definitions/models.PhyOrder'
+            type: array
+        "400":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user's physical orders
+      tags:
+      - Orders
+  /users/{id}/reviews:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all reviews created by a specific user. Requires authentication
+        as that user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of user reviews
+          schema:
+            items:
+              $ref: '#/definitions/models.Review'
+            type: array
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all reviews made by a user
+      tags:
+      - Reviews
+  /users/{id}/reviews/{gameID}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the review written by a specific user for a given videogame.
+        Requires authentication as that user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Videogame ID
+        in: path
+        name: gameID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User review for the videogame
+          schema:
+            $ref: '#/definitions/models.Review'
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User, videogame, or review not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a user's review for a specific videogame
+      tags:
+      - Reviews
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to create a new review or update an existing one
+        for a specific videogame. Requires authentication as that user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Videogame ID
+        in: path
+        name: gameID
+        required: true
+        type: integer
+      - description: Review content (rating, comment, etc.)
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/models.Review'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created or updated review
+          schema:
+            $ref: '#/definitions/models.Review'
+        "400":
+          description: Invalid input or missing parameters
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User or videogame not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Database or internal error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create or update a user's review for a videogame
+      tags:
+      - Reviews
+  /users/{id}/reviews/{reviewID}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a specific review made by a user. The authenticated user
+        must be the owner of the review.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Review ID
+        in: path
+        name: reviewID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review successfully deleted
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Review does not belong to user or unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User or review not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a user review
+      tags:
+      - Reviews
+  /users/{id}/wishlist:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a user's wishlist along with its video games, including
+        genres and platforms. If the wishlist does not exist, a new one is created
+        automatically. Requires authentication and the same user ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WishList'
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a user's wishlist by user ID
+      tags:
+      - Wishlist
+  /users/{id}/wishlist/{vid}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a specific videogame from a user's wishlist. Requires authentication
+        as the user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Videogame ID
+        in: path
+        name: vid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Videogame removed from wishlist
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User or videogame not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Remove a videogame from user's wishlist
+      tags:
+      - Wishlist
+    post:
+      consumes:
+      - application/json
+      description: Adds a specific videogame to a user's wishlist. Creates a wishlist
+        if the user doesn't have one. Requires authentication as the user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Videogame ID
+        in: path
+        name: vid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated wishlist with the new videogame
+          schema:
+            $ref: '#/definitions/models.WishList'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User or videogame not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Videogame already in wishlist
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a videogame to user's wishlist
+      tags:
+      - Wishlist
+  /videogames:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of videogames, optionally filtered by genre, platform,
+        label, and price range. Supports multiple comma-separated values for genre,
+        platform, and label.
+      parameters:
+      - description: Comma-separated list of genres to filter
+        in: query
+        name: genre
+        type: string
+      - description: Comma-separated list of platforms to filter
+        in: query
+        name: platform
+        type: string
+      - description: Comma-separated list of labels to filter
+        in: query
+        name: label
+        type: string
+      - description: Minimum price filter
+        in: query
+        name: price_min
+        type: number
+      - description: Maximum price filter
+        in: query
+        name: price_max
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of videogames matching filters
+          schema:
+            items:
+              $ref: '#/definitions/models.VideoGame'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Retrieve videogames with optional filters
+      tags:
+      - Videogames
+    post:
+      consumes:
+      - application/json
+      description: Creates a new video game entry including its genres, platforms,
+        and labels.
+      parameters:
+      - description: Video game data
+        in: body
+        name: videogame
+        required: true
+        schema:
+          $ref: '#/definitions/models.VideoGame'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.VideoGame'
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new video game
+      tags:
+      - Videogames
+  /videogames/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a video game by its ID. Requires admin privileges.
+      parameters:
+      - description: Video game ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Video game deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a video game
+      tags:
+      - Videogames
+    get:
+      consumes:
+      - application/json
+      description: Retrieves detailed information about a specific videogame, including
+        genres, platforms, labels, and reviews.
+      parameters:
+      - description: Videogame ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Videogame details
+          schema:
+            $ref: '#/definitions/models.VideoGame'
+        "404":
+          description: Videogame not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Retrieve a videogame by ID
+      tags:
+      - Videogames
+    put:
+      consumes:
+      - application/json
+      description: Updates a video game by its ID, replacing its information and many-to-many
+        relationships. Requires admin privileges.
+      parameters:
+      - description: Video game ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated video game data
+        in: body
+        name: videogame
+        required: true
+        schema:
+          $ref: '#/definitions/models.VideoGame'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.VideoGame'
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized or insufficient permissions
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Video game not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update an existing video game
+      tags:
+      - Videogames
+  /videogames/{id}/reviews:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all reviews associated with a specific videogame by its
+        ID.
+      parameters:
+      - description: Videogame ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of reviews for the videogame
+          schema:
+            items:
+              $ref: '#/definitions/models.Review'
+            type: array
+        "404":
+          description: Videogame not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all reviews for a videogame
+      tags:
+      - Reviews
+swagger: "2.0"

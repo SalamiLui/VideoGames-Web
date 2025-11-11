@@ -19,6 +19,19 @@ const (
 	CDKeyUsed      CDKeyStatus = "used"
 )
 
+// GetCDKey godoc
+// @Summary Retrieve and activate a CD key
+// @Description Returns a CD key by ID and marks it as used if valid. Only the owner of the CD key can access it.
+// @Tags CDKeys
+// @Accept json
+// @Produce json
+// @Param id path int true "CD Key ID"
+// @Success 200 {object} models.CDKey "CD key retrieved successfully"
+// @Failure 403 {object} map[string]string "Forbidden – not the owner or CD key canceled"
+// @Failure 404 {object} map[string]string "CD key not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security ApiKeyAuth
+// @Router /cdkeys/{id} [get]
 func GetCDKey(c *gin.Context) {
 	id := c.Param("id")
 	db := database.DB
@@ -49,6 +62,19 @@ func GetCDKey(c *gin.Context) {
 
 }
 
+// RefundCDKey godoc
+// @Summary Refund a CD key
+// @Description Allows the owner of a CD key to cancel it (refund). Only CD keys that are neither used nor already canceled can be refunded. Requires authentication as the owner.
+// @Tags CDKeys
+// @Accept json
+// @Produce json
+// @Param id path int true "CD Key ID"
+// @Success 200 {object} models.CDKey "CD key successfully refunded (canceled)"
+// @Failure 403 {object} map[string]string "Forbidden – not the owner, CD key already used, or CD key without owner"
+// @Failure 404 {object} map[string]string "CD key not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security ApiKeyAuth
+// @Router /cdkeys/{id}/refund [patch]
 func RefundCDKey(c *gin.Context) {
 	id := c.Param("id")
 	db := database.DB
@@ -82,6 +108,20 @@ func RefundCDKey(c *gin.Context) {
 
 }
 
+// CreateCDKey godoc
+// @Summary Create a new CD key for a videogame
+// @Description Allows an admin to create a new CD key associated with a specific videogame. The videogame's digital stock is incremented by 1. Requires admin privileges.
+// @Tags CDKeys
+// @Accept json
+// @Produce json
+// @Param cdkey body models.CDKey true "CD key data to create"
+// @Success 201 {object} models.CDKey "CD key created successfully"
+// @Failure 400 {object} map[string]string "Invalid request body"
+// @Failure 403 {object} map[string]string "Forbidden – insufficient privileges"
+// @Failure 404 {object} map[string]string "Videogame not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security ApiKeyAuth
+// @Router /cdkeys [post]
 func CreateCDKey(c *gin.Context) {
 	if err := middleware.CheckAuthExpectedMinRole(c, roles.Admin); err != nil {
 		c.IndentedJSON(403, gin.H{"error": err.Error()})
@@ -130,6 +170,21 @@ func getCDKey4Videogame(id string) (*models.CDKey, error) {
 
 }
 
+// UpdateCDKey godoc
+// @Summary Update an existing CD key
+// @Description Allows an admin to update the details of an existing CD key. Requires admin privileges.
+// @Tags CDKeys
+// @Accept json
+// @Produce json
+// @Param id path int true "CD Key ID"
+// @Param cdkey body models.CDKey true "Updated CD key data"
+// @Success 200 {object} models.CDKey "CD key updated successfully"
+// @Failure 400 {object} map[string]string "Invalid request body"
+// @Failure 403 {object} map[string]string "Forbidden – insufficient privileges"
+// @Failure 404 {object} map[string]string "CD key not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security ApiKeyAuth
+// @Router /cdkeys/{id} [put]
 func UpdateCDKey(c *gin.Context) {
 	if err := middleware.CheckAuthExpectedMinRole(c, roles.Admin); err != nil {
 		c.IndentedJSON(403, gin.H{"error": err.Error()})

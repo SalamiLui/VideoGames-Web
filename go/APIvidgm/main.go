@@ -8,8 +8,18 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
+	_ "APIvdgm/docs"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title VideoGames API
+// @version 1.0
+// @description Shit documentation for shit API.
+// @termsOfService http://swagger.io/terms/
+// @host localhost:8080
 func main() {
 	router := gin.Default()
 	database.Connect()
@@ -40,6 +50,8 @@ func main() {
 	}
 
 	router.Use(cors.New(config))
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	authGroup := router.Group("/")
 	authGroup.Use(middleware.VerifyJWT())

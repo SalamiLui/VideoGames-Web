@@ -103,7 +103,7 @@ type PhyOrder struct {
 	OrderItems []*OrderItem   `json:"order_items" gorm:"polymorphic:OrderOwner;"`
 	TotalPrice float64        `json:"total_price"`
 	Status     string         `json:"status"` // pending, completed, canceled
-	Direction  datatypes.JSON `json:"direction"`
+	Direction  datatypes.JSON `json:"direction" swaggerignore:"true"`
 	// DirectionID uint         `json:"direction_id"`
 }
 

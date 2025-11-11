@@ -10,6 +10,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetVideogames godoc
+// @Summary Retrieve videogames with optional filters
+// @Description Retrieves a list of videogames, optionally filtered by genre, platform, label, and price range. Supports multiple comma-separated values for genre, platform, and label.
+// @Tags Videogames
+// @Accept json
+// @Produce json
+// @Param genre query string false "Comma-separated list of genres to filter"
+// @Param platform query string false "Comma-separated list of platforms to filter"
+// @Param label query string false "Comma-separated list of labels to filter"
+// @Param price_min query number false "Minimum price filter"
+// @Param price_max query number false "Maximum price filter"
+// @Success 200 {array} models.VideoGame "List of videogames matching filters"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /videogames [get]
 func GetVideogames(c *gin.Context) {
 	db := database.DB
 
@@ -60,6 +74,16 @@ func GetVideogames(c *gin.Context) {
 
 }
 
+// GetVideogameByID godoc
+// @Summary Retrieve a videogame by ID
+// @Description Retrieves detailed information about a specific videogame, including genres, platforms, labels, and reviews.
+// @Tags Videogames
+// @Accept json
+// @Produce json
+// @Param id path int true "Videogame ID"
+// @Success 200 {object} models.VideoGame "Videogame details"
+// @Failure 404 {object} map[string]string "Videogame not found"
+// @Router /videogames/{id} [get]
 func GetVideogameByID(c *gin.Context) {
 	id := c.Param("id")
 	var videogame models.VideoGame
@@ -71,6 +95,18 @@ func GetVideogameByID(c *gin.Context) {
 	c.IndentedJSON(200, videogame)
 }
 
+// CreateVideogame godoc
+// @Summary Create a new video game
+// @Description Creates a new video game entry including its genres, platforms, and labels.
+// @Tags Videogames
+// @Accept json
+// @Produce json
+// @Param videogame body models.VideoGame true "Video game data"
+// @Success 201 {object} models.VideoGame
+// @Failure 400 {object} map[string]string "Invalid request body"
+// @Failure 403 {object} map[string]string "Unauthorized or insufficient permissions"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /videogames [post]
 func CreateVideogame(c *gin.Context) {
 	if err := middleware.CheckAuthExpectedMinRole(c, roles.Admin); err != nil {
 		c.IndentedJSON(403, gin.H{"error": err.Error()})
@@ -94,6 +130,17 @@ func CreateVideogame(c *gin.Context) {
 	c.IndentedJSON(201, videogame)
 }
 
+// DeleteVideogame godoc
+// @Summary Delete a video game
+// @Description Deletes a video game by its ID. Requires admin privileges.
+// @Tags Videogames
+// @Accept json
+// @Produce json
+// @Param id path int true "Video game ID"
+// @Success 200 {object} map[string]string "Video game deleted successfully"
+// @Failure 403 {object} map[string]string "Unauthorized or insufficient permissions"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /videogames/{id} [delete]
 func DeleteVideogame(c *gin.Context) {
 	if err := middleware.CheckAuthExpectedMinRole(c, roles.Admin); err != nil {
 		c.IndentedJSON(403, gin.H{"error": err.Error()})
@@ -109,6 +156,20 @@ func DeleteVideogame(c *gin.Context) {
 	c.IndentedJSON(200, gin.H{"message": "videogame deleted"})
 }
 
+// UpdateVideogame godoc
+// @Summary Update an existing video game
+// @Description Updates a video game by its ID, replacing its information and many-to-many relationships. Requires admin privileges.
+// @Tags Videogames
+// @Accept json
+// @Produce json
+// @Param id path int true "Video game ID"
+// @Param videogame body models.VideoGame true "Updated video game data"
+// @Success 200 {object} models.VideoGame
+// @Failure 400 {object} map[string]string "Invalid request body"
+// @Failure 403 {object} map[string]string "Unauthorized or insufficient permissions"
+// @Failure 404 {object} map[string]string "Video game not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /videogames/{id} [put]
 func UpdateVideogame(c *gin.Context) {
 	if err := middleware.CheckAuthExpectedMinRole(c, roles.Admin); err != nil {
 		c.IndentedJSON(403, gin.H{"error": err.Error()})

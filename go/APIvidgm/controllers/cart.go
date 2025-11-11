@@ -14,6 +14,18 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+// GetCartByUserID godoc
+// @Summary Get a user's cart by user ID
+// @Description Retrieves a user's cart along with its video games. If the cart does not exist, a new one is created automatically. Requires authentication and the same user ID.
+// @Tags Cart
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Success 200 {object} models.Cart
+// @Failure 403 {object} map[string]string "Unauthorized or insufficient permissions"
+// @Failure 404 {object} map[string]string "User not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /users/{id}/cart [get]
 func GetCartByUserID(c *gin.Context) {
 
 	userID := c.Param("id")
@@ -54,6 +66,20 @@ func CreateCart(userID string) (int, any) {
 	return 200, gin.H{"message": "created"}
 }
 
+// AddItemToCart godoc
+// @Summary Add an item to a user's cart
+// @Description Adds a video game to the user's cart. If the cart does not exist, it is created automatically. Requires authentication and the same user ID.
+// @Tags Cart
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Param cartItem body models.CartItem true "Cart item data (includes VideoGameID and Quantity)"
+// @Success 201 {object} models.CartItem
+// @Failure 400 {object} map[string]string "Invalid request body"
+// @Failure 403 {object} map[string]string "Unauthorized or insufficient permissions"
+// @Failure 404 {object} map[string]string "User or video game not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /users/{id}/cart/items [post]
 func AddItemToCart(c *gin.Context) {
 	userID := c.Param("id")
 	var user models.User
@@ -101,6 +127,21 @@ func AddItemToCart(c *gin.Context) {
 
 }
 
+// UpdateItemCart godoc
+// @Summary Update a cart item
+// @Description Updates the quantity of a specific cart item for a user. Recalculates the cart's total price. Requires authentication and the same user ID.
+// @Tags Cart
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Param itemid path int true "Cart item ID"
+// @Param cartItem body models.CartItem true "Updated cart item data (quantity)"
+// @Success 200 {object} map[string]float64 "Updated total price"
+// @Failure 400 {object} map[string]string "Invalid request body"
+// @Failure 403 {object} map[string]string "Unauthorized or insufficient permissions"
+// @Failure 404 {object} map[string]string "User, cart, or cart item not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /users/{id}/cart/items/{itemid} [put]
 func UpdateItemCart(c *gin.Context) {
 	userID := c.Param("id")
 	itemID := c.Param("itemid")
@@ -152,6 +193,19 @@ func UpdateItemCart(c *gin.Context) {
 
 }
 
+// DeleteItemCart godoc
+// @Summary Delete a cart item
+// @Description Removes a specific video game from the user's cart and updates the total price. Requires authentication and the same user ID.
+// @Tags Cart
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Param itemid path int true "Cart item ID"
+// @Success 200 {object} map[string]string "Cart item deleted successfully"
+// @Failure 403 {object} map[string]string "Unauthorized or insufficient permissions"
+// @Failure 404 {object} map[string]string "User, cart, or cart item not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /users/{id}/cart/items/{itemid} [delete]
 func DeleteItemCart(c *gin.Context) {
 	userID := c.Param("id")
 	itemID := c.Param("itemid")
@@ -254,6 +308,20 @@ func checkOut(tx *gorm.DB, id string, c *gin.Context) error {
 
 }
 
+// CheckoutCart godoc
+// @Summary Checkout user's cart
+// @Description Processes the checkout of a user's cart, creating digital and/or physical orders. Physical orders require a delivery address ID provided via query parameter `dirID`. Requires authentication and the same user ID.
+// @Tags Cart
+// @Accept json
+// @Produce json
+// @Param id path int true "Cart ID"
+// @Param dirID query int false "Delivery address ID (required if cart contains physical items)"
+// @Success 200 {object} map[string]string "Checkout completed successfully"
+// @Failure 400 {object} map[string]string "Invalid or missing parameters"
+// @Failure 403 {object} map[string]string "Unauthorized or insufficient permissions"
+// @Failure 404 {object} map[string]string "Cart not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /cart/{id}/checkout [post]
 func CheckoutCart(c *gin.Context) {
 	id := c.Param("id")
 	db := database.DB
