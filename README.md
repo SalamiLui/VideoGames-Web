@@ -11,10 +11,10 @@ Web app to explore and manage video games, built with Go for back and Next.js fo
 
 ## Features
 
-- List video games, wishlist, cart
-- User authentication
+- List video games, wishlist, cart, mockup payment system, admin panel, filters
+- User authentication, JWT security
 - Creative UI
-- More in Process :v
+- Swagger documentation
 
 ## Backend Go
 
