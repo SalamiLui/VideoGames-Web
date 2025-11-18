@@ -1,6 +1,10 @@
 package models
 
-import "github.com/golang-jwt/jwt/v5"
+import (
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+)
 
 type User struct {
 	ID       uint   `json:"id" gorm:"primaryKey"`
@@ -15,4 +19,13 @@ type Claims struct {
 	Username string `json:"username"`
 	Role     string `json:"role"`
 	jwt.RegisteredClaims
+}
+
+type PasswordReset struct {
+	ID        uint      `gorm:"primaryKey"`
+	UserID    uint      `gorm:"not null;index"`
+	TokenHash string    `gorm:"not null;uniqueIndex"`
+	Used      bool      `gorm:"default:false"`
+	ExpiresAt time.Time `gorm:"not null"`
+	CreatedAt time.Time
 }

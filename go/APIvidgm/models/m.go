@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/datatypes"
+import (
+	"gorm.io/datatypes"
+	"gorm.io/gorm"
+)
 
 type User struct {
 	ID         uint         `json:"id" gorm:"primaryKey"`
@@ -27,23 +30,24 @@ type Direction struct {
 }
 
 type VideoGame struct {
-	ID          uint        `json:"id" gorm:"primaryKey"`
-	Title       string      `json:"title"`
-	Genre       []*Genre    `json:"genre" gorm:"many2many:video_game_genres;"`
-	Platform    []*Platform `json:"platform" gorm:"many2many:video_game_platforms;"`
-	ReleaseYear int         `json:"release_year"`
-	Developer   string      `json:"developer"`
-	Label       []*Label    `json:"label" gorm:"many2many:video_game_labels;"`
-	Price       float64     `json:"price"`
-	Synopsis    string      `json:"synopsis"`
-	PhyStock    int         `json:"phy_stock"`
-	DigStock    int         `json:"dig_stock"`
-	PEGI        int         `json:"pegi"`
-	MinReq      string      `json:"min_req"`
-	Rating      float64     `json:"rating"`
-	SumRating   int64       `json:"sum_rating"`
-	Reviews     []*Review   `json:"reviews" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	ImageURL    string      `json:"image_url"`
+	ID          uint           `json:"id" gorm:"primaryKey"`
+	Title       string         `json:"title"`
+	Genre       []*Genre       `json:"genre" gorm:"many2many:video_game_genres;"`
+	Platform    []*Platform    `json:"platform" gorm:"many2many:video_game_platforms;"`
+	ReleaseYear int            `json:"release_year"`
+	Developer   string         `json:"developer"`
+	Label       []*Label       `json:"label" gorm:"many2many:video_game_labels;"`
+	Price       float64        `json:"price"`
+	Synopsis    string         `json:"synopsis"`
+	PhyStock    int            `json:"phy_stock"`
+	DigStock    int            `json:"dig_stock"`
+	PEGI        int            `json:"pegi"`
+	MinReq      string         `json:"min_req"`
+	Rating      float64        `json:"rating"`
+	SumRating   int64          `json:"sum_rating"`
+	Reviews     []*Review      `json:"reviews" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ImageURL    string         `json:"image_url"`
+	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }
 
 type Cart struct {
@@ -73,17 +77,20 @@ type OrderItem struct {
 }
 
 type Genre struct {
-	ID   uint   `json:"id" gorm:"primaryKey"`
-	Name string `json:"name" gorm:"unique"`
+	ID        uint           `json:"id" gorm:"primaryKey"`
+	Name      string         `json:"name" gorm:"unique"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type Platform struct {
-	ID   uint   `json:"id" gorm:"primaryKey"`
-	Name string `json:"name" gorm:"unique"`
+	ID        uint           `json:"id" gorm:"primaryKey"`
+	Name      string         `json:"name" gorm:"unique"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 type Label struct {
-	ID   uint   `json:"id" gorm:"primaryKey"`
-	Name string `json:"name" gorm:"unique"`
+	ID        uint           `json:"id" gorm:"primaryKey"`
+	Name      string         `json:"name" gorm:"unique"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type CDKey struct {

@@ -15,7 +15,7 @@ func main() {
 	router := gin.Default()
 
 	database.Connect()
-	database.DB.AutoMigrate(&models.User{})
+	database.DB.AutoMigrate(&models.User{}, &models.PasswordReset{})
 	config := cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -39,6 +39,9 @@ func main() {
 		})
 	router.POST("/login", controllers.Login)
 	router.GET("/verify", controllers.VerifyJWT)
+
+	router.POST("/password/request", controllers.RequestReset)
+	router.PUT("/password/reset", controllers.ResetPassword)
 
 	// TODO implement recover password
 

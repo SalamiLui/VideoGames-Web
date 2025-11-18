@@ -8,6 +8,7 @@ import { SetStateAction } from "react";
 import { VideogameAdminCard } from "./components/videogameCard";
 import { FilterAdminCard } from "./components/filterCard";
 import ReviewCard from "../games/[id]/reviewCard";
+import { Screamer } from "./screamer";
 
 enum Options {
     VideoGames,
@@ -38,6 +39,38 @@ export default function AdminPage(){
         setShowError : setShowError,
         setInfoError : setErrorInfo
     }
+
+    const [showScreamer, setShowScreamer] = useState(false)
+
+    const verifyJWT = async () => {
+      const API_URL = "http://localhost:8081/verify";
+      const token = localStorage.getItem("token")
+      try {
+        const res = await fetch(API_URL, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+        const data = await res.json();
+        if (!res.ok || !data.valid) {
+            setShowScreamer(true)
+            return;
+        }
+        if (data.claims.role !== "admin" && data.claims.role !== "root"){
+          setShowScreamer(true)
+        }
+      }
+      catch (error) {
+      }
+    }
+
+    verifyJWT()
+
+
+
+
 
     const datas = new Map<string, Dispatch<SetStateAction<any>>>([
         ["videogames", setVideogames],
@@ -144,6 +177,13 @@ export default function AdminPage(){
         triggerNetworkError(t)
 
       }
+    }
+
+    if (showScreamer){
+      // :)
+      return (
+        <Screamer/>
+      )
     }
 
 
